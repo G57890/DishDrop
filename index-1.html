@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام إضافة الأطباق والأقسام</title>
+    
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.1/dist/browser-image-compression.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    
+    <style>
+        :root {
+            --brand-blue: #9ac1e0;
+            --brand-yellow: #fae845;
+            --brand-dark: #2b2b2b;
+            --brand-bg: #f7f7f7;
+            --brand-white: #ffffff;
+            --danger-red: #dc3545;
+            --success-green: #28a745;
+        }
+
+        body { 
+            font-family: Arial, sans-serif; 
+            padding: 30px 20px; 
+            background-color: var(--brand-bg); 
+            color: var(--brand-dark); 
+        }
+        
+        .form-container { 
+            max-width: 650px; 
+            margin: 0 auto; 
+            background: var(--brand-white); 
+            padding: 40px 30px; 
+            border-left: 12px solid var(--brand-blue);
+            border-top: 12px solid var(--brand-yellow);
+            border-right: 12px solid var(--brand-yellow);
+            border-bottom: 12px solid var(--brand-yellow);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05); 
+        }
+
+        h2 { 
+            text-align: center; 
+            color: var(--brand-dark); 
+            margin-top: 0;
+            margin-bottom: 30px; 
+            font-size: 24px;
+        }
+        
+        #limitMessage { 
+            display: none; text-align: center; color: var(--danger-red); font-size: 18px; 
+            font-weight: bold; padding: 40px 20px; background: var(--brand-white); 
+            border: 2px solid var(--danger-red); 
+        }
+        
+        .dish-block, .category-block { 
+            background: #fdfdfd; 
+            border: 1px solid #e0e0e0; 
+            padding: 20px; 
+            margin-bottom: 25px; 
+            position: relative; 
+        }
+        
+        .dish-block { border-right: 6px solid var(--brand-blue); }
+        .category-block { border-right: 6px solid var(--brand-yellow); }
+
+        .dish-title { 
+            font-size: 18px; font-weight: bold; color: var(--brand-dark); 
+            margin-top: 0; margin-bottom: 15px; 
+            border-bottom: 3px solid var(--brand-yellow); 
+            display: inline-block; padding-bottom: 5px; 
+        }
+
+        label { display: block; margin-top: 15px; font-weight: bold; color: #444; font-size: 14px; }
+        input[type="text"], input[type="number"], textarea { 
+            width: 100%; padding: 12px; margin-top: 6px; 
+            border: 1px solid #ccc; background-color: #fafafa;
+            box-sizing: border-box; font-family: inherit; font-size: 14px; transition: 0.3s;
+        }
+        input:focus, textarea:focus {
+            border-color: var(--brand-blue);
+            outline: none;
+            background-color: var(--brand-white);
+        }
+
+        /* ---------------- تصميم زر رفع الصورة والمعاينة ---------------- */
+        .file-input-hidden {
+            display: none; 
+        }
+        .custom-file-upload {
+            display: block;
+            padding: 14px;
+            cursor: pointer;
+            background-color: var(--brand-bg);
+            border: 2px dashed var(--brand-blue);
+            color: var(--brand-dark);
+            border-radius: 6px;
+            text-align: center;
+            font-weight: bold;
+            transition: 0.3s;
+            margin-top: 8px;
+        }
+        .custom-file-upload:hover {
+            background-color: #eaf3fa;
+            border-color: #79aed6;
+        }
+        .file-name-display {
+            font-size: 13px;
+            color: #555;
+            margin-top: 8px;
+            display: block;
+            font-weight: bold;
+        }
+        
+        /* تصميم صورة المعاينة */
+        .image-preview {
+            display: none; /* مخفية بالبداية */
+            max-width: 100%;
+            height: auto;
+            max-height: 250px;
+            border-radius: 8px;
+            margin-top: 15px;
+            border: 1px solid #ddd;
+            object-fit: cover;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+        }
+        /* ------------------------------------------------------------- */
+        
+        .checkbox-group {
+            margin-top: 15px;
+            background: #f0f4f8;
+            padding: 15px;
+            border-radius: 5px;
+            min-height: 20px;
+        }
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            margin-top: 8px;
+            font-weight: normal;
+            cursor: pointer;
+            padding: 5px 0;
+        }
+        .checkbox-label input {
+            width: auto;
+            margin-left: 10px;
+            margin-top: 0;
+            cursor: pointer;
+            width: 18px;
+            height: 18px;
+        }
+
+        .empty-dishes-msg {
+            color: #666;
+            font-size: 13px;
+            font-style: italic;
+            display: none;
+        }
+
+        .btn-group { display: flex; gap: 15px; margin-top: 25px; }
+        button { font-family: inherit; }
+
+        .add-btn { 
+            width: 100%; padding: 14px; background-color: var(--brand-blue); 
+            color: var(--brand-dark); border: none; font-size: 16px; font-weight: bold; 
+            cursor: pointer; margin-bottom: 25px; transition: 0.2s; 
+        }
+        .add-btn:hover { background-color: #85aed0; }
+        
+        .add-cat-btn { background-color: var(--brand-yellow); }
+        .add-cat-btn:hover { background-color: #ebd630; }
+
+        .remove-btn { 
+            background-color: var(--danger-red); color: white; border: none; padding: 6px 12px; 
+            font-size: 12px; font-weight: bold; cursor: pointer; position: absolute; top: 20px; left: 20px; 
+        }
+        
+        .next-btn, .submit-btn, .back-btn { 
+            flex: 1; padding: 16px; border: none; font-size: 17px; font-weight: bold; 
+            cursor: pointer; transition: 0.2s; 
+        }
+        
+        .next-btn { background-color: var(--brand-yellow); color: var(--brand-dark); }
+        .back-btn { background-color: #e0e0e0; color: var(--brand-dark); }
+        .submit-btn { background-color: var(--success-green); color: white; }
+        
+        .submit-btn:disabled, .next-btn:disabled { background-color: #cccccc; color: #666; cursor: not-allowed; }
+        .compress-status { font-size: 13px; font-weight: bold; margin-top: 8px; margin-bottom: 0; }
+        
+        #step2 { display: none; }
+        .step-indicator { 
+            text-align: center; color: var(--brand-dark); font-size: 15px; 
+            margin-bottom: 25px; font-weight: bold; background: #eee; 
+            padding: 10px; border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="limitMessage">
+    🚫 عذراً، لقد استنفدت الحد الأقصى لطلبات الإضافة (10 مرات) من هذا الجهاز. يرجى التواصل مع الإدارة.
+</div>
+
+<div class="form-container" id="appContainer">
+    <h2>طلب إضافة أطباق للمنيو</h2>
+    
+    <form action="https://api.web3forms.com/submit" method="POST" enctype="multipart/form-data" id="mainMenuForm">
+        
+        <input type="hidden" name="access_key" value="037f6e92-9976-4223-9a04-ed3c1d7a8964">
+        <input type="hidden" name="subject" value="وصلك طلب إضافة أطباق وتصنيفها">
+        <input type="hidden" name="from_name" value="نظام إدارة المنيو">
+        
+        <textarea name="تقرير_الطلب_الكامل" id="fullReport" hidden></textarea>
+
+        <div id="step1">
+            <div class="step-indicator">الخطوة 1 من 2: بيانات الأطباق 📝</div>
+            <div id="dishesWrapper"></div>
+            <button type="button" class="add-btn" id="addDishBtn">أضف طبقاً آخر +</button>
+            <button type="button" class="next-btn" id="nextBtn" onclick="goToStep2()">التالي: تصنيف الأطباق ←</button>
+        </div>
+
+        <div id="step2">
+            <div class="step-indicator">الخطوة 2 من 2: إنشاء الأقسام وتوزيع الأطباق 🚀</div>
+            <div id="categoriesWrapper"></div>
+            <button type="button" class="add-btn add-cat-btn" onclick="addNewCategory()">أضف قسم جديد +</button>
+
+            <div class="btn-group">
+                <button type="button" class="back-btn" onclick="goToStep1()">→ رجوع للأطباق</button>
+                <button type="submit" class="submit-btn" id="submitBtn">إرسال الطلب النهائي</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+    const MAX_SUBMISSIONS = 10;
+    let currentSubmissions = parseInt(localStorage.getItem('menuSubmissionsCount')) || 0;
+
+    if (currentSubmissions >= MAX_SUBMISSIONS) {
+        document.getElementById('appContainer').style.display = 'none';
+        document.getElementById('limitMessage').style.display = 'block';
+    }
+
+    let isSubmitting = false; 
+    window.addEventListener('beforeunload', function (e) {
+        if (!isSubmitting && dishCount > 0) {
+            e.preventDefault();
+            e.returnValue = '';
+        }
+    });
+
+    let dishCount = 0;
+    let catCount = 0;
+    const form = document.getElementById('mainMenuForm');
+    const dishesWrapper = document.getElementById('dishesWrapper');
+    const nextBtn = document.getElementById('nextBtn');
+    const submitBtn = document.getElementById('submitBtn');
+
+    function addNewDish() {
+        dishCount++;
+        const dishBlock = document.createElement('div');
+        dishBlock.className = 'dish-block';
+        dishBlock.id = `dishBlock_${dishCount}`;
+        
+        dishBlock.innerHTML = `
+            <div class="dish-title">الطبق رقم (${dishCount})</div>
+            ${dishCount > 1 ? `<button type="button" class="remove-btn" onclick="removeDish(${dishCount})">حذف ×</button>` : ''}
+            
+            <label>اسم الطبق:</label>
+            <input type="text" class="dish-name-input" id="dishName_${dishCount}" data-id="${dishCount}" required placeholder="مثال: برجر لحم كلاسيك">
+
+            <label>تفاصيل الطبق ومكوناته:</label>
+            <textarea class="dish-desc-input" id="dishDesc_${dishCount}" rows="2" required placeholder="مثال: شريحة لحم مع الجبن..."></textarea>
+
+            <label>السعر (د.ك):</label>
+            <input type="number" class="dish-price-input" id="dishPrice_${dishCount}" step="0.001" required placeholder="4.500">
+
+            <label>صورة الطبق:</label>
+            <label class="custom-file-upload">
+                📸 اضغط هنا لإضافة صورة الطبق
+                <input type="file" accept="image/*" class="file-input-hidden image-input" required data-dish-id="${dishCount}">
+            </label>
+            <span class="file-name-display" id="fileNameDisplay_${dishCount}">لم يتم اختيار صورة بعد</span>
+            <p class="compress-status" id="compressStatus_${dishCount}"></p>
+            
+            <img id="imagePreview_${dishCount}" class="image-preview" alt="معاينة الصورة">
+        `;
+        dishesWrapper.appendChild(dishBlock);
+    }
+
+    function removeDish(id) {
+        const blockToRemove = document.getElementById(`dishBlock_${id}`);
+        if (blockToRemove) blockToRemove.remove();
+    }
+
+    if (currentSubmissions < MAX_SUBMISSIONS) addNewDish();
+    document.getElementById('addDishBtn').addEventListener('click', addNewDish);
+
+    dishesWrapper.addEventListener('change', async function (event) {
+        if (event.target && event.target.classList.contains('image-input')) {
+            const fileInput = event.target;
+            const file = fileInput.files[0];
+            const dishId = fileInput.getAttribute('data-dish-id');
+            const fileNameDisplay = document.getElementById(`fileNameDisplay_${dishId}`);
+            const statusText = document.getElementById(`compressStatus_${dishId}`);
+            const imagePreview = document.getElementById(`imagePreview_${dishId}`);
+
+            if (!file) {
+                fileNameDisplay.textContent = "لم يتم اختيار صورة بعد";
+                imagePreview.style.display = 'none'; // إخفاء الصورة إذا تم الإلغاء
+                return;
+            }
+
+            // عرض اسم الملف للعميل
+            fileNameDisplay.textContent = `📁 ${file.name}`;
+            
+            // عرض المعاينة الفورية للصورة
+            imagePreview.src = URL.createObjectURL(file);
+            imagePreview.style.display = 'block';
+
+            const options = { maxSizeMB: 1, maxWidthOrHeight: 1200, useWebWorker: true };
+
+            try {
+                statusText.style.color = 'var(--brand-blue)';
+                statusText.textContent = '⏳ جاري تجهيز الصورة...';
+                nextBtn.disabled = true;
+
+                const compressedFile = await imageCompression(file, options);
+                const dataTransfer = new DataTransfer();
+                dataTransfer.items.add(new File([compressedFile], compressedFile.name, { type: compressedFile.type }));
+                fileInput.files = dataTransfer.files;
+
+                statusText.style.color = 'var(--success-green)';
+                statusText.textContent = '✅ الصورة جاهزة!';
+                
+                const allStatuses = Array.from(document.querySelectorAll('.compress-status'));
+                if (!allStatuses.some(el => el.textContent.includes('⏳'))) {
+                    nextBtn.disabled = false;
+                }
+            } catch (error) {
+                statusText.style.color = 'var(--danger-red)';
+                statusText.textContent = '❌ فشل التجهيز، أعد المحاولة.';
+                nextBtn.disabled = false;
+            }
+        }
+    });
+
+    // ----------------- منطق الأقسام الديناميكي -----------------
+    document.getElementById('categoriesWrapper').addEventListener('change', function(e) {
+        if (e.target.classList.contains('cat-dish-checkbox')) {
+            updateCheckboxesVisibility();
+        }
+    });
+
+    function updateCheckboxesVisibility() {
+        const assignedDishes = {};
+        document.querySelectorAll('.cat-dish-checkbox:checked').forEach(cb => {
+            assignedDishes[cb.dataset.dishId] = cb.closest('.category-block').id;
+        });
+
+        document.querySelectorAll('.cat-dish-checkbox').forEach(cb => {
+            const dishId = cb.dataset.dishId;
+            const parentCatId = cb.closest('.category-block').id;
+
+            if (assignedDishes[dishId] && assignedDishes[dishId] !== parentCatId) {
+                cb.closest('.checkbox-label').style.display = 'none';
+            } else {
+                cb.closest('.checkbox-label').style.display = 'flex';
+            }
+        });
+
+        document.querySelectorAll('.checkbox-group').forEach(group => {
+            const visibleLabels = Array.from(group.querySelectorAll('.checkbox-label')).filter(label => label.style.display !== 'none');
+            let msgEl = group.querySelector('.empty-dishes-msg');
+            
+            if (visibleLabels.length === 0) {
+                if (!msgEl) {
+                    msgEl = document.createElement('div');
+                    msgEl.className = 'empty-dishes-msg';
+                    msgEl.textContent = 'تم تصنيف جميع الأطباق المتاحة في أقسام أخرى.';
+                    group.appendChild(msgEl);
+                }
+                msgEl.style.display = 'block';
+            } else {
+                if (msgEl) msgEl.style.display = 'none';
+            }
+        });
+    }
+
+    function goToStep2() {
+        const inputs = document.getElementById('step1').querySelectorAll('input[required], textarea[required]');
+        let isValid = true;
+        inputs.forEach(input => {
+            if (!input.checkValidity()) {
+                input.reportValidity();
+                isValid = false;
+            }
+        });
+        if (!isValid) return;
+
+        document.getElementById('step1').style.display = 'none';
+        document.getElementById('step2').style.display = 'block';
+
+        const categoriesWrapper = document.getElementById('categoriesWrapper');
+        if (categoriesWrapper.children.length === 0) {
+            addNewCategory();
+        } else {
+            updateAllCategoriesData();
+        }
+    }
+
+    function goToStep1() {
+        document.getElementById('step2').style.display = 'none';
+        document.getElementById('step1').style.display = 'block';
+    }
+
+    function addNewCategory() {
+        catCount++;
+        const catBlock = document.createElement('div');
+        catBlock.className = 'category-block';
+        catBlock.id = `catBlock_${catCount}`;
+        
+        catBlock.innerHTML = `
+            <div class="dish-title">قسم جديد</div>
+            ${catCount > 1 ? `<button type="button" class="remove-btn" onclick="removeCategory(${catCount})">حذف القسم ×</button>` : ''}
+            
+            <label>اسم القسم (مثال: المقبلات):</label>
+            <input type="text" class="category-name-input" required placeholder="أدخل اسم القسم هنا...">
+            
+            <label>اختر الأطباق التي تتبع لهذا القسم:</label>
+            <div class="checkbox-group" id="checkboxGroup_${catCount}"></div>
+        `;
+        document.getElementById('categoriesWrapper').appendChild(catBlock);
+        updateAllCategoriesData();
+    }
+
+    function removeCategory(id) {
+        const blockToRemove = document.getElementById(`catBlock_${id}`);
+        if (blockToRemove) {
+            blockToRemove.remove();
+            updateCheckboxesVisibility(); 
+        }
+    }
+
+    function updateAllCategoriesData() {
+        const dishInputs = document.querySelectorAll('.dish-name-input');
+        const allGroups = document.querySelectorAll('.checkbox-group');
+        
+        const assignedDishes = {};
+        document.querySelectorAll('.cat-dish-checkbox:checked').forEach(cb => {
+            assignedDishes[cb.dataset.dishId] = cb.closest('.category-block').id;
+        });
+
+        allGroups.forEach(group => {
+            const catId = group.closest('.category-block').id;
+            group.innerHTML = ''; 
+            
+            dishInputs.forEach((input) => {
+                const dishId = input.dataset.id;
+                const dishName = input.value.trim() || `طبق بدون اسم ${dishId}`;
+                const isChecked = assignedDishes[dishId] === catId ? 'checked' : '';
+                
+                group.innerHTML += `
+                    <label class="checkbox-label">
+                        <input type="checkbox" class="cat-dish-checkbox" data-dish-id="${dishId}" data-dish-name="${dishName}" ${isChecked}>
+                        ${dishName}
+                    </label>
+                `;
+            });
+        });
+
+        updateCheckboxesVisibility(); 
+    }
+
+    // ----------------- منطق الإرسال وتجميع التقرير النهائي -----------------
+    form.addEventListener('submit', async function(e) {
+        e.preventDefault(); 
+        if (isSubmitting) return; 
+
+        const catInputs = document.querySelectorAll('.category-name-input');
+        const catNamesSet = new Set();
+        for (let input of catInputs) {
+            const name = input.value.trim();
+            if (name === "") continue;
+            if (catNamesSet.has(name)) {
+                alert(`خطأ: لا يمكن تكرار اسم القسم ("${name}"). يرجى دمج الأطباق في قسم واحد أو تغيير الاسم.`);
+                return;
+            }
+            catNamesSet.add(name);
+        }
+
+        const totalDishes = document.querySelectorAll('.dish-name-input').length;
+        const assignedDishesCount = document.querySelectorAll('.cat-dish-checkbox:checked').length;
+        if (assignedDishesCount < totalDishes) {
+            alert(`تنبيه: لقد قمت بإضافة ${totalDishes} أطباق، ولكنك صنفت ${assignedDishesCount} فقط. يرجى اختيار قسم لكل طبق متبقي قبل الإرسال.`);
+            return;
+        }
+
+        const isConfirmed = confirm('هل أنت متأكد من كافة البيانات وترغب في إرسال الطلب الآن؟');
+        if (!isConfirmed) return; 
+
+        isSubmitting = true;
+        submitBtn.disabled = true;
+        document.querySelector('.back-btn').disabled = true;
+        submitBtn.textContent = '📦 جاري ضغط الصور والإرسال...';
+
+        let reportText = "====== تقرير تفاصيل المنيو ======\n\n";
+        
+        reportText += "🍽️ أولاً: بيانات الأطباق\n";
+        reportText += "--------------------------------------------------\n";
+
+        for (let i = 1; i <= dishCount; i++) {
+            const dishBlock = document.getElementById(`dishBlock_${i}`);
+            if (dishBlock) {
+                const name = document.getElementById(`dishName_${i}`).value;
+                const desc = document.getElementById(`dishDesc_${i}`).value;
+                const price = document.getElementById(`dishPrice_${i}`).value;
+                
+                const fileInput = dishBlock.querySelector('.image-input');
+                let finalImageName = "بدون صورة";
+                
+                if (fileInput.files.length > 0) {
+                    const ext = fileInput.files[0].name.split('.').pop();
+                    finalImageName = `Dish_${i}_Image.${ext}`; 
+                }
+
+                reportText += `[ الطبق رقم ${i} ]\n`;
+                reportText += `🏷️ الاسم: ${name}\n`;
+                reportText += `📝 التفاصيل: ${desc}\n`;
+                reportText += `💰 السعر: ${price} د.ك\n`;
+                reportText += `🖼️ اسم الصورة المرفقة بالملف: ${finalImageName}\n`;
+                reportText += "--------------------------------------------------\n";
+            }
+        }
+
+        reportText += "\n📁 ثانياً: توزيع الأقسام\n";
+        reportText += "--------------------------------------------------\n";
+        
+        const catBlocks = document.querySelectorAll('.category-block');
+        catBlocks.forEach(block => {
+            const catName = block.querySelector('.category-name-input').value;
+            const checkedDishes = block.querySelectorAll('.cat-dish-checkbox:checked');
+            
+            if (checkedDishes.length > 0) {
+                reportText += `📌 قسم: ${catName}\n`;
+                checkedDishes.forEach(cb => {
+                    reportText += `   - ${cb.dataset.dishName}\n`;
+                });
+                reportText += `\n`;
+            }
+        });
+
+        document.getElementById('fullReport').value = reportText;
+
+        document.querySelectorAll('input, textarea').forEach(el => {
+            if(el.id !== 'fullReport' && el.name !== 'access_key' && el.name !== 'subject' && el.name !== 'from_name') {
+                el.removeAttribute('name');
+            }
+        });
+
+        try {
+            const zip = new JSZip();
+            let hasImages = false;
+
+            const fileInputs = document.querySelectorAll('.image-input');
+            fileInputs.forEach((input) => {
+                if (input.files.length > 0) {
+                    const file = input.files[0];
+                    const dishId = input.getAttribute('data-dish-id');
+                    const ext = file.name.split('.').pop();
+                    const newFileName = `Dish_${dishId}_Image.${ext}`;
+                    
+                    zip.file(newFileName, file);
+                    hasImages = true;
+                }
+            });
+
+            if (hasImages) {
+                const zipContent = await zip.generateAsync({type: "blob"});
+                const zipFile = new File([zipContent], "Dishes_Images.zip", {type: "application/zip"});
+                
+                const dt = new DataTransfer();
+                dt.items.add(zipFile);
+                
+                const zipInput = document.createElement('input');
+                zipInput.type = 'file';
+                zipInput.name = 'All_Images_Zip'; 
+                zipInput.style.display = 'none';
+                zipInput.files = dt.files;
+                
+                form.appendChild(zipInput);
+            }
+
+            localStorage.setItem('menuSubmissionsCount', currentSubmissions + 1);
+            HTMLFormElement.prototype.submit.call(form);
+
+        } catch (error) {
+            console.error('Error:', error);
+            alert('حدث خطأ أثناء تجميع الصور بملف واحد.');
+            
+            isSubmitting = false;
+            submitBtn.disabled = false;
+            document.querySelector('.back-btn').disabled = false;
+            submitBtn.textContent = 'إرسال الطلب النهائي';
+        }
+    });
+</script>
+
+</body>
+</html>
