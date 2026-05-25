@@ -21,22 +21,22 @@
 
         body { 
             font-family: Arial, sans-serif; 
-            padding: 20px 10px; /* تقليل الهوامش الخارجية لإعطاء مساحة أكبر */
+            padding: 20px 10px; 
             background-color: var(--brand-bg); 
             color: var(--brand-dark); 
-            font-size: 16px; /* تكبير الخط الأساسي */
+            font-size: 16px; 
         }
         
         .form-container { 
             max-width: 650px; 
             margin: 0 auto; 
             background: var(--brand-white); 
-            padding: 30px 20px; /* توسعة المساحة الداخلية */
-            border-left: 8px solid var(--brand-blue); /* تقليل سماكة الإطار لزيادة المساحة */
+            padding: 30px 20px; 
+            border-left: 8px solid var(--brand-blue); 
             border-top: 8px solid var(--brand-yellow);
             border-right: 8px solid var(--brand-yellow);
             border-bottom: 8px solid var(--brand-yellow);
-            border-radius: 8px; /* إضافة انحناء بسيط يعطي جمالية */
+            border-radius: 8px; 
             box-shadow: 0 5px 20px rgba(0,0,0,0.05); 
         }
 
@@ -45,39 +45,36 @@
             color: var(--brand-dark); 
             margin-top: 0;
             margin-bottom: 30px; 
-            font-size: 26px; /* تكبير العنوان */
+            font-size: 26px; 
         }
         
-        #limitMessage { 
-            display: none; text-align: center; color: var(--danger-red); font-size: 18px; 
-            font-weight: bold; padding: 40px 20px; background: var(--brand-white); 
-            border: 2px solid var(--danger-red); 
-        }
-        
-        .dish-block, .category-block { 
+        .dish-block, .category-block, .restaurant-block { 
             background: #fdfdfd; 
             border: 1px solid #e0e0e0; 
-            border-radius: 8px; /* زوايا دائرية بدلاً من الخطوط الجانبية */
+            border-radius: 8px; 
             padding: 20px 15px; 
             margin-bottom: 25px; 
             position: relative; 
         }
-        
-        /* تم إزالة الخطوط الجانبية الزائدة من هنا لتوسعة المكان */
 
+        .restaurant-block {
+            border-color: var(--brand-blue);
+            background-color: #f4f9fd;
+        }
+        
         .dish-title { 
-            font-size: 20px; /* تكبير عنوان الطبق */
+            font-size: 20px; 
             font-weight: bold; color: var(--brand-dark); 
             margin-top: 0; margin-bottom: 15px; 
             border-bottom: 3px solid var(--brand-yellow); 
             display: inline-block; padding-bottom: 5px; 
         }
 
-        label { display: block; margin-top: 15px; font-weight: bold; color: #444; font-size: 15px; } /* تكبير خط العناوين */
+        label { display: block; margin-top: 15px; font-weight: bold; color: #444; font-size: 15px; } 
         input[type="text"], input[type="number"], textarea { 
-            width: 100%; padding: 14px; margin-top: 6px; /* زيادة مساحة الكتابة */
+            width: 100%; padding: 14px; margin-top: 6px; 
             border: 1px solid #ccc; background-color: #fafafa;
-            box-sizing: border-box; font-family: inherit; font-size: 15px; /* تكبير خط الكتابة */
+            box-sizing: border-box; font-family: inherit; font-size: 15px; 
             transition: 0.3s;
             border-radius: 5px;
         }
@@ -87,13 +84,11 @@
             background-color: var(--brand-white);
         }
 
-        /* ---------------- تصميم زر رفع الصورة والمعاينة ---------------- */
-        .file-input-hidden {
-            display: none; 
-        }
+        .file-input-hidden { display: none; }
+        
         .custom-file-upload {
             display: block;
-            padding: 16px 14px; /* توسعة الزر قليلاً */
+            padding: 16px 14px; 
             cursor: pointer;
             background-color: var(--brand-bg);
             border: 2px dashed var(--brand-blue);
@@ -101,7 +96,7 @@
             border-radius: 6px;
             text-align: center;
             font-weight: bold;
-            font-size: 15px; /* تكبير خط الزر */
+            font-size: 15px; 
             transition: 0.3s;
             margin-top: 8px;
         }
@@ -110,7 +105,7 @@
             border-color: #79aed6;
         }
         .file-name-display {
-            font-size: 14px; /* تكبير اسم الملف */
+            font-size: 14px; 
             color: #555;
             margin-top: 8px;
             display: block;
@@ -128,7 +123,6 @@
             object-fit: cover;
             box-shadow: 0 3px 10px rgba(0,0,0,0.08);
         }
-        /* ------------------------------------------------------------- */
         
         .checkbox-group {
             margin-top: 15px;
@@ -199,25 +193,20 @@
             padding: 12px; border-radius: 6px;
         }
 
-        /* تحسينات إضافية مخصصة لشاشات الجوال الصغيرة جداً */
         @media (max-width: 480px) {
             body { padding: 10px 5px; }
             .form-container {
                 padding: 20px 12px;
-                border-width: 5px; /* تصغير الإطار الخارجي أكثر للتوسعة */
+                border-width: 5px; 
             }
-            .dish-block, .category-block {
-                padding: 15px 10px; /* الاستفادة القصوى من المساحة الداخلية */
+            .dish-block, .category-block, .restaurant-block {
+                padding: 15px 10px; 
             }
             .btn-group { flex-direction: column; gap: 10px; }
         }
     </style>
 </head>
 <body>
-
-<div id="limitMessage">
-    🚫 عذراً، لقد استنفدت الحد الأقصى لطلبات الإضافة (10 مرات) من هذا الجهاز. يرجى التواصل مع الإدارة.
-</div>
 
 <div class="form-container" id="appContainer">
     <h2>طلب إضافة أطباق للمنيو</h2>
@@ -232,6 +221,13 @@
 
         <div id="step1">
             <div class="step-indicator">الخطوة 1 من 2: بيانات الأطباق 📝</div>
+            
+            <div class="restaurant-block">
+                <div class="dish-title">بيانات المطعم</div>
+                <label>اسم المطعم:</label>
+                <input type="text" id="restaurantName" required placeholder="أدخل اسم المطعم هنا...">
+            </div>
+
             <div id="dishesWrapper"></div>
             <button type="button" class="add-btn" id="addDishBtn">أضف طبقاً آخر +</button>
             <button type="button" class="next-btn" id="nextBtn" onclick="goToStep2()">التالي: تصنيف الأطباق ←</button>
@@ -251,14 +247,6 @@
 </div>
 
 <script>
-    const MAX_SUBMISSIONS = 10;
-    let currentSubmissions = parseInt(localStorage.getItem('menuSubmissionsCount')) || 0;
-
-    if (currentSubmissions >= MAX_SUBMISSIONS) {
-        document.getElementById('appContainer').style.display = 'none';
-        document.getElementById('limitMessage').style.display = 'block';
-    }
-
     let isSubmitting = false; 
     window.addEventListener('beforeunload', function (e) {
         if (!isSubmitting && dishCount > 0) {
@@ -280,6 +268,7 @@
         dishBlock.className = 'dish-block';
         dishBlock.id = `dishBlock_${dishCount}`;
         
+        // تم إزالة required من حقل التفاصيل
         dishBlock.innerHTML = `
             <div class="dish-title">الطبق رقم (${dishCount})</div>
             ${dishCount > 1 ? `<button type="button" class="remove-btn" onclick="removeDish(${dishCount})">حذف ×</button>` : ''}
@@ -287,8 +276,8 @@
             <label>اسم الطبق:</label>
             <input type="text" class="dish-name-input" id="dishName_${dishCount}" data-id="${dishCount}" required placeholder="مثال: برجر لحم كلاسيك">
 
-            <label>تفاصيل الطبق ومكوناته:</label>
-            <textarea class="dish-desc-input" id="dishDesc_${dishCount}" rows="2" required placeholder="مثال: شريحة لحم مع الجبن..."></textarea>
+            <label>تفاصيل الطبق ومكوناته (اختياري):</label>
+            <textarea class="dish-desc-input" id="dishDesc_${dishCount}" rows="2" placeholder="مثال: شريحة لحم مع الجبن..."></textarea>
 
             <label>السعر (د.ك):</label>
             <input type="number" class="dish-price-input" id="dishPrice_${dishCount}" step="0.001" required placeholder="4.500">
@@ -311,7 +300,8 @@
         if (blockToRemove) blockToRemove.remove();
     }
 
-    if (currentSubmissions < MAX_SUBMISSIONS) addNewDish();
+    // إضافة أول طبق تلقائياً
+    addNewDish();
     document.getElementById('addDishBtn').addEventListener('click', addNewDish);
 
     dishesWrapper.addEventListener('change', async function (event) {
@@ -517,7 +507,12 @@
         document.querySelector('.back-btn').disabled = true;
         submitBtn.textContent = '📦 جاري ضغط الصور والإرسال...';
 
+        // الحصول على اسم المطعم وإزالة المسافات لاستخدامه في أسماء الملفات
+        const restaurantName = document.getElementById('restaurantName').value.trim();
+        const safeRestaurantName = restaurantName.replace(/\s+/g, '_'); 
+
         let reportText = "====== تقرير تفاصيل المنيو ======\n\n";
+        reportText += `🏢 اسم المطعم: ${restaurantName}\n\n`;
         
         reportText += "🍽️ أولاً: بيانات الأطباق\n";
         reportText += "--------------------------------------------------\n";
@@ -526,7 +521,7 @@
             const dishBlock = document.getElementById(`dishBlock_${i}`);
             if (dishBlock) {
                 const name = document.getElementById(`dishName_${i}`).value;
-                const desc = document.getElementById(`dishDesc_${i}`).value;
+                const desc = document.getElementById(`dishDesc_${i}`).value || "لا توجد تفاصيل";
                 const price = document.getElementById(`dishPrice_${i}`).value;
                 
                 const fileInput = dishBlock.querySelector('.image-input');
@@ -534,7 +529,8 @@
                 
                 if (fileInput.files.length > 0) {
                     const ext = fileInput.files[0].name.split('.').pop();
-                    finalImageName = `Dish_${i}_Image.${ext}`; 
+                    // تضمين اسم المطعم في اسم الصورة
+                    finalImageName = `${safeRestaurantName}_Dish_${i}_Image.${ext}`; 
                 }
 
                 reportText += `[ الطبق رقم ${i} ]\n`;
@@ -565,6 +561,7 @@
 
         document.getElementById('fullReport').value = reportText;
 
+        // إزالة خاصية name من الحقول الأخرى حتى لا يتم إرسالها بشكل منفصل للايميل
         document.querySelectorAll('input, textarea').forEach(el => {
             if(el.id !== 'fullReport' && el.name !== 'access_key' && el.name !== 'subject' && el.name !== 'from_name') {
                 el.removeAttribute('name');
@@ -581,7 +578,8 @@
                     const file = input.files[0];
                     const dishId = input.getAttribute('data-dish-id');
                     const ext = file.name.split('.').pop();
-                    const newFileName = `Dish_${dishId}_Image.${ext}`;
+                    // تضمين اسم المطعم في اسم الصورة داخل ملف الـ Zip
+                    const newFileName = `${safeRestaurantName}_Dish_${dishId}_Image.${ext}`;
                     
                     zip.file(newFileName, file);
                     hasImages = true;
@@ -590,7 +588,7 @@
 
             if (hasImages) {
                 const zipContent = await zip.generateAsync({type: "blob"});
-                const zipFile = new File([zipContent], "Dishes_Images.zip", {type: "application/zip"});
+                const zipFile = new File([zipContent], `${safeRestaurantName}_Images.zip`, {type: "application/zip"});
                 
                 const dt = new DataTransfer();
                 dt.items.add(zipFile);
@@ -604,7 +602,6 @@
                 form.appendChild(zipInput);
             }
 
-            localStorage.setItem('menuSubmissionsCount', currentSubmissions + 1);
             HTMLFormElement.prototype.submit.call(form);
 
         } catch (error) {
