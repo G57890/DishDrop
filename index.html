@@ -268,7 +268,6 @@
         dishBlock.className = 'dish-block';
         dishBlock.id = `dishBlock_${dishCount}`;
         
-        // تم إزالة required من حقل التفاصيل
         dishBlock.innerHTML = `
             <div class="dish-title">الطبق رقم (${dishCount})</div>
             ${dishCount > 1 ? `<button type="button" class="remove-btn" onclick="removeDish(${dishCount})">حذف ×</button>` : ''}
@@ -300,7 +299,6 @@
         if (blockToRemove) blockToRemove.remove();
     }
 
-    // إضافة أول طبق تلقائياً
     addNewDish();
     document.getElementById('addDishBtn').addEventListener('click', addNewDish);
 
@@ -507,12 +505,13 @@
         document.querySelector('.back-btn').disabled = true;
         submitBtn.textContent = '📦 جاري ضغط الصور والإرسال...';
 
-        // الحصول على اسم المطعم وإزالة المسافات لاستخدامه في أسماء الملفات
         const restaurantName = document.getElementById('restaurantName').value.trim();
-        const safeRestaurantName = restaurantName.replace(/\s+/g, '_'); 
+        
+        // إنشاء رقم ID عشوائي للطلب يحل مشكلة الرموز
+        const orderID = Math.floor(100000 + Math.random() * 900000); 
 
         let reportText = "====== تقرير تفاصيل المنيو ======\n\n";
-        reportText += `🏢 اسم المطعم: ${restaurantName}\n\n`;
+        reportText += `🏢 اسم المطعم: ${restaurantName} (رقم الطلب: ${orderID})\n\n`;
         
         reportText += "🍽️ أولاً: بيانات الأطباق\n";
         reportText += "--------------------------------------------------\n";
@@ -529,8 +528,7 @@
                 
                 if (fileInput.files.length > 0) {
                     const ext = fileInput.files[0].name.split('.').pop();
-                    // تضمين اسم المطعم في اسم الصورة
-                    finalImageName = `${safeRestaurantName}_Dish_${i}_Image.${ext}`; 
+                    finalImageName = `Dish_${i}_ID_${orderID}.${ext}`; 
                 }
 
                 reportText += `[ الطبق رقم ${i} ]\n`;
@@ -561,7 +559,6 @@
 
         document.getElementById('fullReport').value = reportText;
 
-        // إزالة خاصية name من الحقول الأخرى حتى لا يتم إرسالها بشكل منفصل للايميل
         document.querySelectorAll('input, textarea').forEach(el => {
             if(el.id !== 'fullReport' && el.name !== 'access_key' && el.name !== 'subject' && el.name !== 'from_name') {
                 el.removeAttribute('name');
@@ -578,8 +575,8 @@
                     const file = input.files[0];
                     const dishId = input.getAttribute('data-dish-id');
                     const ext = file.name.split('.').pop();
-                    // تضمين اسم المطعم في اسم الصورة داخل ملف الـ Zip
-                    const newFileName = `${safeRestaurantName}_Dish_${dishId}_Image.${ext}`;
+                    
+                    const newFileName = `Dish_${dishId}_ID_${orderID}.${ext}`;
                     
                     zip.file(newFileName, file);
                     hasImages = true;
@@ -588,7 +585,7 @@
 
             if (hasImages) {
                 const zipContent = await zip.generateAsync({type: "blob"});
-                const zipFile = new File([zipContent], `${safeRestaurantName}_Images.zip`, {type: "application/zip"});
+                const zipFile = new File([zipContent], `Images_Order_${orderID}.zip`, {type: "application/zip"});
                 
                 const dt = new DataTransfer();
                 dt.items.add(zipFile);
