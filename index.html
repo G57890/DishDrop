@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DishDrop</title>
     
+    <link rel="icon" type="image/png" href="5670.png">
+    
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.1/dist/browser-image-compression.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     
@@ -40,12 +42,26 @@
             box-shadow: 0 5px 20px rgba(0,0,0,0.05); 
         }
 
+        /* تنسيق الهيدر الجديد مع اللوجو */
+        .brand-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+
+        .brand-logo {
+            width: 45px;
+            height: 45px;
+            object-fit: contain;
+        }
+
         h2 { 
             text-align: center; 
             color: var(--brand-dark); 
-            margin-top: 0;
-            margin-bottom: 30px; 
-            font-size: 26px; 
+            margin: 0;
+            font-size: 28px; 
         }
         
         .dish-block, .category-block, .restaurant-block { 
@@ -209,7 +225,10 @@
 <body>
 
 <div class="form-container" id="appContainer">
-    <h2>طلب إضافة أطباق للمنيو</h2>
+    <div class="brand-header">
+        <img src="5670.png" alt="DishDrop Logo" class="brand-logo">
+        <h2>DishDrop</h2>
+    </div>
     
     <form action="https://api.web3forms.com/submit" method="POST" enctype="multipart/form-data" id="mainMenuForm">
         
@@ -507,7 +526,6 @@
 
         const restaurantName = document.getElementById('restaurantName').value.trim();
         
-        // إنشاء رقم ID عشوائي للطلب يحل مشكلة الرموز
         const orderID = Math.floor(100000 + Math.random() * 900000); 
 
         let reportText = "====== تقرير تفاصيل المنيو ======\n\n";
