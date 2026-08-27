@@ -1,1 +1,696 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="Logo638639112983938688.webp" type="image/webp" />
+    <title>Menu</title>
 
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap");
+
+      :root {
+        --bg-color: #75818f;
+        --gold: rgb(202, 172, 94);
+        --text-light: #ffffff;
+        --card-bg: rgba(0, 0, 0, 0.15);
+        --modal-bg: #4a545e;
+      }
+
+      /* شاشة التحميل */
+      #loader-screen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: var(--bg-color);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+      }
+
+      .spinner {
+        width: 60px;
+        height: 60px;
+        border: 6px solid rgba(202, 172, 94, 0.2);
+        border-top-color: var(--gold);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      #menu-content {
+        display: none;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: "Tajawal", sans-serif;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        background-color: var(--bg-color);
+        color: var(--text-light);
+        padding-top: 145px;
+        scroll-behavior: smooth;
+      }
+
+      /* الشريط العلوي (الأقسام) */
+      .nav-wrapper {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        background-color: var(--bg-color);
+        box-shadow: 0 2px 8px var(--gold);
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+      }
+
+      .nav-wrapper::before,
+      .nav-wrapper::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 13px;
+        pointer-events: none;
+        z-index: 2;
+        transition: opacity 0.3s ease;
+        opacity: 0;
+      }
+
+      .nav-wrapper::before {
+        right: 0;
+        background: linear-gradient(
+          to left,
+          rgba(202, 172, 94, 0.8),
+          transparent
+        );
+      }
+      .nav-wrapper::after {
+        left: 0;
+        background: linear-gradient(
+          to right,
+          rgba(202, 172, 94, 0.8),
+          transparent
+        );
+      }
+      .nav-wrapper.show-right-glow::before {
+        opacity: 1;
+      }
+      .nav-wrapper.show-left-glow::after {
+        opacity: 1;
+      }
+
+      nav {
+        display: flex;
+        gap: 20px;
+        overflow-x: auto;
+        white-space: nowrap;
+        width: 100%;
+        padding: 10px 15px 15px 15px;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      nav::-webkit-scrollbar {
+        display: none;
+      }
+
+      /* هذي السطرين هم اللي راح يخلون الأقسام بالنص إذا كانوا شوية، وما يقصهم إذا كثروا */
+      .a-nav:first-of-type {
+        margin-right: auto;
+      }
+      .a-nav:last-of-type {
+        margin-left: auto;
+      }
+
+      .a-nav {
+        text-decoration: none;
+        color: var(--gold);
+        text-align: center;
+        position: relative;
+        transition: 0.3s;
+        cursor: pointer;
+      }
+
+      .a-nav h2 {
+        font-size: 21px;
+        -webkit-text-stroke: 0.2px var(--gold);
+        margin-bottom: 5px;
+      }
+
+      .a-nav img {
+        width: 60px;
+        height: 60px;
+        object-fit: cover;
+        display: block;
+        margin: 0 auto;
+      }
+
+      .cat-shape-circle {
+        border-radius: 50% !important;
+      }
+      .cat-shape-original {
+        border-radius: 8px !important;
+      }
+      .cat-border-gold {
+        border: 2px solid var(--gold) !important;
+      }
+      .cat-border-none {
+        border: 2px solid transparent !important;
+      }
+
+      .a-nav::after {
+        content: "";
+        position: absolute;
+        bottom: -5px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 0%;
+        height: 3px;
+        background-color: var(--gold);
+        transition: width 0.3s ease;
+      }
+
+      .a-nav.active::after {
+        width: 100%;
+      }
+
+      /* الشعار */
+      .header-logo {
+        text-align: center;
+        margin: 20px 0 40px;
+      }
+      .header-logo img {
+        width: 200px;
+      }
+
+      /* الأقسام والأطباق */
+      .category-section {
+        margin-bottom: 40px;
+        scroll-margin-top: 160px; /* هذا يبعد القسم عن الشريط العلوي */
+        transition:
+          transform 0.3s ease,
+          box-shadow 0.3s ease;
+        border-radius: 20px;
+      }
+
+      .section-header {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin: 40px 0 50px;
+      }
+
+      .section-title {
+        font-size: 38px;
+        color: var(--text-light);
+        margin-bottom: 10px;
+        text-align: center; /* يخلي كل شيء بالنص */
+        padding: 0 20px; /* يمنع الكلام من إنه يلزق بأطراف الشاشة */
+        line-height: 1.4; /* يخلي المسافة بين السطر الأول والثاني مريحة للعين */
+      }
+
+      .section-title em {
+        color: var(--gold);
+        font-style: normal;
+        font-weight: bold; /* يحافظ على سماكة الخط الأصلية */
+        word-wrap: break-word; /* يسمح للنص الطويل ينزل سطر ثاني بدون لا يخرب التصميم */
+      }
+
+      .menu-grid {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: flex-start; /* 👈 هذا السطر هو اللي يمنع البطاقة من التمدد مع جارتها */
+        gap: 15px;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 10px;
+      }
+
+      .meal-card {
+        background-color: var(--card-bg);
+        border-radius: 15px;
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        flex: 0 0 calc(50% - 10px);
+        max-width: 280px;
+        transition: transform 0.3s ease;
+      }
+
+      .meal-card:hover {
+        transform: translateY(-5px);
+      }
+
+      .meal-card img {
+        width: 100%;
+        aspect-ratio: 4 / 3;
+        object-fit: cover;
+        border: 2px solid var(--gold);
+        border-radius: 10px;
+        margin-bottom: 10px;
+      }
+
+      .meal-title {
+        font-size: 16px;
+        text-align: center;
+        -webkit-text-stroke: 0.1px white;
+        margin-bottom: 8px;
+      }
+
+      .meal-price {
+        font-size: 19px;
+        font-family: Arial, sans-serif;
+        color: var(--gold);
+        text-align: center;
+        font-weight: bold;
+        margin-top: auto;
+        padding-top: 10px;
+        border-top: 1px solid rgba(255, 255, 255, 0.2);
+      }
+
+      details {
+        width: 100%;
+        text-align: center;
+        margin-top: 5px;
+        cursor: pointer;
+        margin-bottom: 10px;
+      }
+
+      summary {
+        font-size: 16px;
+        color: var(--gold);
+        outline: none;
+        font-weight: bold;
+      }
+
+      .meal-details {
+        font-size: 14px;
+        color: #dddddd;
+        margin-top: 8px;
+        line-height: 1.4;
+      }
+
+      /* زر الوجبة العشوائية للزبون */
+      .random-btn-container {
+        text-align: center;
+        margin: 60px 0;
+      }
+
+      #customerRandomBtn {
+        font-size: 23px;
+        width: auto;
+        padding: 0 20px;
+        height: 48px;
+        background-color: #f7f5f5;
+        border-top: solid 3px white;
+        border-left: solid 3px white;
+        border-right: solid 5px black;
+        border-bottom: solid 5px black;
+        cursor: pointer;
+        font-family: "Tajawal", sans-serif;
+        font-weight: bold;
+        transition: 0.2s;
+        color: black;
+      }
+
+      #customerRandomBtn:active {
+        border-right: solid 3px white;
+        border-bottom: solid 3px white;
+        border-top: solid 5px black;
+        border-left: solid 5px black;
+      }
+
+      /* نافذة النتيجة العشوائية */
+      .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.8);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 2000;
+        padding: 20px;
+      }
+
+      .modal-content {
+        background-color: var(--modal-bg);
+        border: 2px solid var(--gold);
+        border-radius: 20px;
+        width: 100%;
+        max-width: 400px;
+        padding: 30px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        text-align: center;
+      }
+
+      .modal-content h3 {
+        color: var(--text-light);
+        margin-bottom: 20px;
+        font-size: 22px;
+      }
+
+      .result-text {
+        font-size: 32px;
+        color: var(--gold);
+        font-weight: bold;
+        margin-bottom: 30px;
+        text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+      }
+
+      .btn-close {
+        background-color: var(--gold);
+        color: #111;
+        padding: 10px 30px;
+        border: none;
+        border-radius: 8px;
+        font-size: 18px;
+        font-weight: bold;
+        cursor: pointer;
+        font-family: inherit;
+        transition: 0.2s;
+      }
+
+      .btn-close:hover {
+        background-color: #dcc482;
+      }
+
+      @media (min-width: 570px) {
+        .menu-grid {
+          gap: 25px;
+          padding: 0 20px;
+        }
+        .meal-card {
+          flex: 0 0 calc(33.333% - 20px);
+          border-radius: 20px;
+          min-height: 280px;
+        }
+        .meal-title {
+          font-size: 20px;
+        }
+        .meal-price {
+          font-size: 22px;
+        }
+      }
+
+      @media (min-width: 1024px) {
+        .meal-card {
+          flex: 0 0 calc(25% - 20px);
+        }
+      }
+    </style>
+
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+      // في صفحة الزبون، ما نحتاج Auth، نحتاج بس Firestore عشان نقرأ البيانات
+      import {
+        getFirestore,
+        doc,
+        getDoc,
+        collection,
+        getDocs,
+      } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyAmMB6t0ePeB4Sx4sjjK_djhMj-WKbLnwM",
+        authDomain: "dishdrop-kw.firebaseapp.com",
+        projectId: "dishdrop-kw",
+        storageBucket: "dishdrop-kw.firebasestorage.app",
+        messagingSenderId: "844568139665",
+        appId: "1:844568139665:web:6444cdcfbe9709ea166c30",
+      };
+
+      const app = initializeApp(firebaseConfig);
+      const db = getFirestore(app);
+
+      // 🌟 التوصيلة الأساسية: هني نحدد منيو أي مطعم نبي نعرض
+      const RESTAURANT_OWNER_EMAIL = "yousef2008alqattan@gmail.com";
+
+      // مصفوفة الوجبات العشوائية
+      window.customerRandomPool = [];
+
+      async function loadCustomerMenu() {
+        try {
+          // 1️⃣ جلب الأقسام
+          const catRef = collection(
+            db,
+            "restaurants",
+            RESTAURANT_OWNER_EMAIL,
+            "categories",
+          );
+          const catSnap = await getDocs(catRef);
+
+          let cats = [];
+          catSnap.forEach((doc) => {
+            cats.push({ id: doc.id, ...doc.data() });
+          });
+          cats.sort(
+            (a, b) => (a.createdAt?.seconds || 0) - (b.createdAt?.seconds || 0),
+          );
+
+          const mainNav = document.getElementById("mainNav");
+          const appContainer = document.getElementById("appContainer");
+
+          cats.forEach((cat) => {
+            const sectionId = cat.sectionId;
+            const shapeClass =
+              cat.shape === "circle"
+                ? "cat-shape-circle"
+                : "cat-shape-original";
+            const borderClass =
+              cat.border === "gold" ? "cat-border-gold" : "cat-border-none";
+            const imgClasses = `${shapeClass} ${borderClass}`;
+
+            // إضافة للناف بار
+            const newNavBtn = document.createElement("a");
+            newNavBtn.className = "a-nav";
+            newNavBtn.href = "#" + sectionId;
+            newNavBtn.innerHTML = `<h2><span style="font-size: 21px; margin-bottom: 5px; display:block;">${cat.name}</span><img src="${cat.imageUrl}" class="${imgClasses}" alt="${cat.name}"></h2>`;
+            mainNav.appendChild(newNavBtn);
+
+            // إضافة قسم للأطباق
+            const sectionWrapper = document.createElement("div");
+            sectionWrapper.className = "category-section";
+            sectionWrapper.id = sectionId;
+            sectionWrapper.innerHTML = `
+              <div class="section-header">
+                  <h1 class="section-title"><em> ${cat.name} </em></h1>
+              </div>
+              <div class="menu-grid" id="grid-${sectionId}"></div>
+            `;
+            appContainer.appendChild(sectionWrapper);
+          });
+
+          // 2️⃣ جلب الأطباق
+          const dishRef = collection(
+            db,
+            "restaurants",
+            RESTAURANT_OWNER_EMAIL,
+            "menuItems",
+          );
+          const dishSnap = await getDocs(dishRef);
+
+          let dishes = [];
+          dishSnap.forEach((doc) => {
+            dishes.push({ id: doc.id, ...doc.data() });
+          });
+          dishes.sort(
+            (a, b) => (a.createdAt?.seconds || 0) - (b.createdAt?.seconds || 0),
+          );
+
+          dishes.forEach((dish) => {
+            const gridContainer = document.getElementById(dish.gridId);
+            if (gridContainer) {
+              let detailsHTML =
+                dish.details && dish.details.trim() !== ""
+                  ? `<details><summary>التفاصيل</summary><div class="meal-details">${dish.details}</div></details>`
+                  : `<details style="visibility: hidden; pointer-events: none;"><summary>التفاصيل</summary></details>`;
+
+              const dishCard = document.createElement("div");
+              dishCard.className = "meal-card";
+              dishCard.innerHTML = `
+                <img src="${dish.imageUrl}" alt="${dish.name}">
+                <h3 class="meal-title">${dish.name}</h3>
+                ${detailsHTML}
+                <div class="meal-price"><span dir="ltr">${dish.price} KWD</span></div>
+              `;
+              gridContainer.appendChild(dishCard);
+            }
+          });
+
+          // 3️⃣ جلب قائمة الوجبات العشوائية
+          const restDocRef = doc(db, "restaurants", RESTAURANT_OWNER_EMAIL);
+          const restDocSnap = await getDoc(restDocRef);
+          if (restDocSnap.exists() && restDocSnap.data().randomMealPool) {
+            window.customerRandomPool = restDocSnap.data().randomMealPool;
+          }
+
+          // إخفاء التحميل وعرض المنيو
+          document.getElementById("loader-screen").style.display = "none";
+          document.getElementById("menu-content").style.display = "block";
+        } catch (error) {
+          console.error("خطأ في جلب المنيو:", error);
+          alert("حدث خطأ في تحميل المنيو، يرجى تحديث الصفحة.");
+        }
+      }
+
+      // تشغيل الدالة أول ما تفتح الصفحة
+      document.addEventListener("DOMContentLoaded", loadCustomerMenu);
+    </script>
+  </head>
+  <body>
+    <!-- شاشة التحميل -->
+    <div id="loader-screen">
+      <div class="spinner"></div>
+    </div>
+
+    <!-- محتوى المنيو للزبائن -->
+    <div id="menu-content">
+      <!-- الشريط العلوي (الأقسام) -->
+      <div class="nav-wrapper" id="navWrapper">
+        <nav id="mainNav"></nav>
+      </div>
+
+      <!-- الشعار -->
+      <div class="header-logo">
+        <img src="ChatGPT Image Aug 19, 2026, 04_34_19 PM (1).png" alt="Logo" />
+      </div>
+
+      <!-- حاوية الأقسام والأطباق -->
+      <div id="appContainer"></div>
+
+      <!-- زر الوجبة العشوائية -->
+      <div class="random-btn-container">
+        <button id="customerRandomBtn" onclick="pickRandomMeal()">
+          وجبة عشوائية
+        </button>
+      </div>
+
+      <!-- نافذة نتيجة الوجبة العشوائية -->
+      <div class="modal-overlay" id="resultModal">
+        <div class="modal-content">
+          <h3>الوجبة المقترحة لك هي:</h3>
+          <div class="result-text" id="resultText">...</div>
+          <button
+            class="btn-close"
+            onclick="
+              document.getElementById('resultModal').style.display = 'none'
+            "
+          >
+            إغلاق
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- أكواد مساعدة للزبائن -->
+    <script>
+      // دالة السحب العشوائي
+      function pickRandomMeal() {
+        if (window.customerRandomPool && window.customerRandomPool.length > 0) {
+          const randomIndex = Math.floor(
+            Math.random() * window.customerRandomPool.length,
+          );
+          const selectedMeal = window.customerRandomPool[randomIndex];
+
+          document.getElementById("resultText").textContent = selectedMeal;
+          document.getElementById("resultModal").style.display = "flex";
+        } else {
+          alert("صاحب المطعم لم يحدد وجبات للقرعة حالياً، جرب لاحقاً!");
+        }
+      }
+
+      // تأثير الظل للشريط العلوي عند التمرير
+      const nav = document.getElementById("mainNav");
+      const navWrapper = document.getElementById("navWrapper");
+
+      function updateNavGlow() {
+        const maxScroll = nav.scrollWidth - nav.clientWidth;
+        if (maxScroll <= 0) {
+          navWrapper.classList.remove("show-right-glow", "show-left-glow");
+          return;
+        }
+        const navRect = nav.getBoundingClientRect();
+        const firstItem = nav.firstElementChild;
+        const lastItem = nav.lastElementChild;
+
+        if (!firstItem || !lastItem) return;
+
+        const canScrollRight =
+          firstItem.getBoundingClientRect().right > navRect.right + 5;
+        const canScrollLeft =
+          lastItem.getBoundingClientRect().left < navRect.left - 5;
+
+        if (canScrollRight) navWrapper.classList.add("show-right-glow");
+        else navWrapper.classList.remove("show-right-glow");
+
+        if (canScrollLeft) navWrapper.classList.add("show-left-glow");
+        else navWrapper.classList.remove("show-left-glow");
+      }
+
+      nav.addEventListener("scroll", updateNavGlow);
+      window.addEventListener("resize", updateNavGlow);
+
+      // نشغلها أول مرة بعد ما تترتب الأقسام
+      setTimeout(updateNavGlow, 500);
+
+      // نظام تتبع الأقسام المقتبس
+      function activateSection() {
+        let currentId = "";
+        const sections = document.querySelectorAll(".category-section");
+
+        // حساب مكان القسم بالشاشة
+        sections.forEach((section) => {
+          const sectionTop = section.offsetTop - 200;
+          if (window.scrollY >= sectionTop) {
+            currentId = section.getAttribute("id");
+          }
+        });
+
+        // تشغيل الخط تحت القسم المناسب وإطفائه عن الباقي
+        const navLinks = document.querySelectorAll(".a-nav");
+        navLinks.forEach((link) => {
+          link.classList.remove("active");
+          if (link.getAttribute("href") === `#${currentId}`) {
+            link.classList.add("active");
+          }
+        });
+
+        // تحريك الشريط العلوي ليضع القسم النشط في المنتصف
+        const activeLink = document.querySelector(".a-nav.active");
+        if (activeLink) {
+          activeLink.scrollIntoView({
+            behavior: "smooth",
+            block: "nearest",
+            inline: "center",
+          });
+        }
+      }
+
+      // تشغيل النظام مع كل تمرير للشاشة
+      window.addEventListener("scroll", activateSection);
+    </script>
+  </body>
+</html>
