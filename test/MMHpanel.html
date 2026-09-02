@@ -291,7 +291,7 @@
         display: flex;
         flex-wrap: wrap;
         justify-content: center;
-        align-items: flex-start; /* 👈 هذا السطر هو اللي يمنع البطاقة من التمدد مع جارتها */
+        align-items: flex-start;
         gap: 15px;
         max-width: 1200px;
         margin: 0 auto;
@@ -309,6 +309,55 @@
         max-width: 280px;
         position: relative;
         transition: box-shadow 0.3s ease;
+      }
+
+      /* ستايلات شارة غير متوفر وتأثير التغبيش */
+      .meal-card.unavailable > img,
+      .meal-card.unavailable > .meal-title,
+      .meal-card.unavailable > .meal-price {
+        opacity: 0.4;
+        filter: grayscale(100%);
+      }
+      
+      .meal-card.unavailable > details {
+        opacity: 0.9;
+        position: relative;
+        z-index: 11;
+      }
+
+      .out-of-stock-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.2);
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10;
+        pointer-events: none; /* يسمح بالضغط على أزرار التحكم خلفه */
+      }
+
+      .out-of-stock-text {
+        color: white;
+        background: #e74c3c;
+        padding: 8px 20px;
+        font-weight: bold;
+        font-size: 22px;
+        border-radius: 8px;
+        transform: rotate(-10deg);
+        border: 2px solid white;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+      }
+
+      /* لضمان أن أزرار التحكم بالأعلى والأسفل تكون واضحة وقابلة للضغط */
+      .card-top-controls, .card-bottom-controls {
+        position: relative;
+        z-index: 15;
+        opacity: 1 !important;
+        filter: none !important;
       }
 
       .highlight-glow {
@@ -885,14 +934,20 @@
           dishes.forEach((dish) => {
             const gridContainer = document.getElementById(dish.gridId);
             if (gridContainer) {
+              const isAvail = dish.isAvailable !== false;
+              const availClass = isAvail ? '' : 'unavailable';
+              const overlayHTML = isAvail ? '' : `<div class="out-of-stock-overlay"><span class="out-of-stock-text">غير متوفر</span></div>`;
+              
               let detailsHTML =
                 dish.details && dish.details.trim() !== ""
                   ? `<details><summary>التفاصيل</summary><div class="meal-details">${dish.details}</div></details>`
                   : `<details style="visibility: hidden; pointer-events: none;"><summary>التفاصيل</summary></details>`;
+              
               const innerHTMLContent = `
+                ${overlayHTML}
                 <div class="card-top-controls">
                   <button onclick="openDishModal('${dish.gridId}', this.closest('.meal-card'))" title="تعديل">✏️</button>
-                    <button onclick="openDeleteDish(this)" title="حذف">🗑️</button>
+                  <button onclick="openDeleteDish(this)" title="حذف">🗑️</button>
                 </div>
                 <img src="${dish.imageUrl}" alt="${dish.name}">
                 <h3 class="meal-title">${dish.name}</h3>
@@ -904,7 +959,7 @@
                 </div>
               `;
               const dishCard = document.createElement("div");
-              dishCard.className = "meal-card";
+              dishCard.className = `meal-card ${availClass}`;
               dishCard.innerHTML = innerHTMLContent;
               const addDishBtn = gridContainer.querySelector(".add-dish-card");
               gridContainer.insertBefore(dishCard, addDishBtn);
@@ -1211,17 +1266,16 @@
       <div class="modal-overlay" id="deleteModal">
         <div class="modal-content" style="max-width: 350px">
           <h3 style="color: #e74c3c">تأكيد الحذف</h3>
-          <p
-            id="deleteModalMsg"
-            style="font-size: 18px; margin-bottom: 25px; line-height: 1.5"
-          ></p>
+          <p id="deleteModalMsg" style="font-size: 18px; margin-bottom: 15px; line-height: 1.5"></p>
+          
+          <div id="tempDeleteSection" style="background-color: rgba(0,0,0,0.2); padding: 15px; border-radius: 10px; margin-bottom: 25px; display: none;">
+              <p id="tempDeleteMsg" style="font-size: 15px; margin-bottom: 10px; color: #ddd;">هل تريد حذف الطبق مؤقتاً؟ (الطبق غير متوفر حالياً)</p>
+              <button id="tempDeleteBtn" style="background-color: #3498db; color: white; width: 100%; padding: 10px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer;" onclick="confirmTempDelete()">⏱️ حذف مؤقتاً</button>
+          </div>
+
           <div class="modal-btns">
-            <button class="btn-save btn-danger" onclick="confirmDelete()">
-              حذف
-            </button>
-            <button class="btn-cancel" onclick="closeDeleteModal()">
-              إلغاء
-            </button>
+            <button class="btn-save btn-danger" onclick="confirmDelete()">حذف نهائي</button>
+            <button class="btn-cancel" onclick="closeDeleteModal()">إلغاء</button>
           </div>
         </div>
       </div>
@@ -1878,14 +1932,21 @@
               imageUrl: finalImageUrl,
               gridId: currentActiveGridId,
               createdAt: new Date(),
+              isAvailable: true
             });
           }
 
+          const isAvail = editTargetDish ? !editTargetDish.classList.contains("unavailable") : true;
+          const availClass = isAvail ? '' : 'unavailable';
+          const overlayHTML = isAvail ? '' : `<div class="out-of-stock-overlay"><span class="out-of-stock-text">غير متوفر</span></div>`;
+          
           let detailsHTML =
             details.trim() !== ""
               ? `<details><summary>التفاصيل</summary><div class="meal-details">${details}</div></details>`
               : `<details style="visibility: hidden; pointer-events: none;"><summary>التفاصيل</summary></details>`;
+          
           const innerHTMLContent = `
+            ${overlayHTML}
             <div class="card-top-controls">
                 <button onclick="openDishModal('${currentActiveGridId}', this.closest('.meal-card'))" title="تعديل">✏️</button>
                 <button onclick="openDeleteDish(this)" title="حذف">🗑️</button>
@@ -1901,10 +1962,11 @@
           `;
 
           if (editTargetDish) {
+            editTargetDish.className = `meal-card ${availClass}`;
             editTargetDish.innerHTML = innerHTMLContent;
           } else {
             const dishCard = document.createElement("div");
-            dishCard.className = "meal-card";
+            dishCard.className = `meal-card ${availClass}`;
             dishCard.innerHTML = innerHTMLContent;
             const gridContainer = document.getElementById(currentActiveGridId);
             const addDishBtn = gridContainer.querySelector(".add-dish-card");
@@ -2054,21 +2116,79 @@
         itemToDelete = { type: "category", id: catId };
         document.getElementById("deleteModalMsg").textContent =
           `هل أنت متأكد من حذف قسم (${name}) بجميع أطباقه؟`;
+        
+        document.getElementById("tempDeleteSection").style.display = "none";
         document.getElementById("deleteModal").style.display = "flex";
       }
 
       function openDeleteDish(btnElem) {
         const card = btnElem.closest(".meal-card");
         const name = card.querySelector(".meal-title").textContent;
-        itemToDelete = { type: "dish", element: card, name: name };
+        const isUnavailable = card.classList.contains("unavailable");
+        
+        itemToDelete = { type: "dish", element: card, name: name, isUnavailable: isUnavailable };
         document.getElementById("deleteModalMsg").textContent =
           `هل أنت متأكد من حذف طبق (${name})؟`;
+        
+        document.getElementById("tempDeleteSection").style.display = "block";
+        const tempBtn = document.getElementById("tempDeleteBtn");
+        
+        if (isUnavailable) {
+            tempBtn.innerHTML = "✅ إرجاع الطبق (متوفر)";
+            tempBtn.style.backgroundColor = "#2ecc71";
+            document.getElementById("tempDeleteMsg").textContent = "هذا الطبق محذوف مؤقتاً (غير متوفر)، هل تريد إرجاعه؟";
+        } else {
+            tempBtn.innerHTML = "⏱️ حذف مؤقتاً";
+            tempBtn.style.backgroundColor = "#3498db";
+            document.getElementById("tempDeleteMsg").textContent = "هل تريد حذف الطبق مؤقتاً؟ (الطبق غير متوفر حالياً)";
+        }
+        
         document.getElementById("deleteModal").style.display = "flex";
       }
 
       function closeDeleteModal() {
         document.getElementById("deleteModal").style.display = "none";
         itemToDelete = null;
+      }
+
+      async function confirmTempDelete() {
+        const tempBtn = document.getElementById("tempDeleteBtn");
+        const originalText = tempBtn.textContent;
+        tempBtn.textContent = "جاري التحديث..";
+        tempBtn.disabled = true;
+
+        try {
+          const card = itemToDelete.element;
+          const dishName = itemToDelete.name;
+          const makeAvailable = itemToDelete.isUnavailable; // اذا كان مخفي، راح يصير متاح
+
+          const menuRef = window.collection(window.db, "restaurants", window.currentUserEmail, "menuItems");
+          const q = window.query(menuRef, window.where("name", "==", dishName));
+          const querySnapshot = await window.getDocs(q);
+          
+          querySnapshot.forEach(async (document) => {
+              await window.updateDoc(document.ref, {
+                  isAvailable: makeAvailable
+              });
+          });
+
+          if (makeAvailable) {
+              card.classList.remove("unavailable");
+              const overlay = card.querySelector(".out-of-stock-overlay");
+              if(overlay) overlay.remove();
+          } else {
+              card.classList.add("unavailable");
+              if(!card.querySelector(".out-of-stock-overlay")) {
+                  card.insertAdjacentHTML('afterbegin', `<div class="out-of-stock-overlay"><span class="out-of-stock-text">غير متوفر</span></div>`);
+              }
+          }
+          closeDeleteModal();
+        } catch (error) {
+           alert("حدث خطأ: " + error.message);
+        } finally {
+           tempBtn.textContent = originalText;
+           tempBtn.disabled = false;
+        }
       }
 
       async function confirmDelete() {
