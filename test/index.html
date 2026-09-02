@@ -274,17 +274,17 @@
 
       .out-of-stock-overlay {
         position: absolute;
-        top: 0;
+        top: 30px;
         left: 0;
         right: 0;
         bottom: 0;
-        background: rgba(0, 0, 0, 0.2);
-        border-radius: 15px;
+        background: transparent; /* شلنا اللون الأسود اللي يغطي الكرت كله */
         display: flex;
-        align-items: center;
+        align-items: flex-start; /* هذا السطر يرفع الكلمة لأعلى الكرت */
         justify-content: center;
+        padding-top: 55px; /* هذا السطر ينزل الكلمة شوي عشان تتوسط الصورة بالضبط */
         z-index: 10;
-        pointer-events: none; /* يسمح بالضغط على زر التفاصيل خلفه */
+        pointer-events: none;
       }
 
       .out-of-stock-text {
