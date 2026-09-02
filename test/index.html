@@ -254,7 +254,49 @@
         border: 1px solid rgba(255, 255, 255, 0.05);
         flex: 0 0 calc(50% - 10px);
         max-width: 280px;
+        position: relative;
         transition: transform 0.3s ease;
+      }
+
+      /* ستايلات شارة غير متوفر وتأثير التغبيش للزبائن */
+      .meal-card.unavailable > img,
+      .meal-card.unavailable > .meal-title,
+      .meal-card.unavailable > .meal-price {
+        opacity: 0.5;
+        filter: grayscale(100%);
+      }
+      
+      .meal-card.unavailable > details {
+        opacity: 0.9; 
+        position: relative;
+        z-index: 11;
+      }
+
+      .out-of-stock-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.2);
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10;
+        pointer-events: none; /* يسمح بالضغط على زر التفاصيل خلفه */
+      }
+
+      .out-of-stock-text {
+        color: white;
+        background: #e74c3c;
+        padding: 8px 20px;
+        font-weight: bold;
+        font-size: 22px;
+        border-radius: 8px;
+        transform: rotate(-10deg);
+        border: 2px solid white;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
       }
 
       .meal-card:hover {
@@ -523,14 +565,19 @@
           dishes.forEach((dish) => {
             const gridContainer = document.getElementById(dish.gridId);
             if (gridContainer) {
+              const isAvail = dish.isAvailable !== false;
+              const availClass = isAvail ? '' : 'unavailable';
+              const overlayHTML = isAvail ? '' : `<div class="out-of-stock-overlay"><span class="out-of-stock-text">غير متوفر</span></div>`;
+              
               let detailsHTML =
                 dish.details && dish.details.trim() !== ""
                   ? `<details><summary>التفاصيل</summary><div class="meal-details">${dish.details}</div></details>`
                   : `<details style="visibility: hidden; pointer-events: none;"><summary>التفاصيل</summary></details>`;
 
               const dishCard = document.createElement("div");
-              dishCard.className = "meal-card";
+              dishCard.className = `meal-card ${availClass}`;
               dishCard.innerHTML = `
+                ${overlayHTML}
                 <img src="${dish.imageUrl}" alt="${dish.name}">
                 <h3 class="meal-title">${dish.name}</h3>
                 ${detailsHTML}
