@@ -502,15 +502,29 @@
 
       async function loadCustomerMenu() {
         try {
-          // 1️⃣ جلب الأقسام
+          // 1️⃣ تجهيز مسارات البيانات
           const catRef = collection(
             db,
             "restaurants",
             RESTAURANT_OWNER_EMAIL,
             "categories",
           );
-          const catSnap = await getDocs(catRef);
+          const dishRef = collection(
+            db,
+            "restaurants",
+            RESTAURANT_OWNER_EMAIL,
+            "menuItems",
+          );
+          const restDocRef = doc(db, "restaurants", RESTAURANT_OWNER_EMAIL);
 
+          // 2️⃣ السحر هنا: نرسل الـ 3 طلبات لفايربيس بنفس اللحظة! (يسرع التحميل جداً)
+          const [catSnap, dishSnap, restDocSnap] = await Promise.all([
+            getDocs(catRef),
+            getDocs(dishRef),
+            getDoc(restDocRef),
+          ]);
+
+          // --- معالجة الأقسام ---
           let cats = [];
           catSnap.forEach((doc) => {
             cats.push({ id: doc.id, ...doc.data() });
@@ -532,14 +546,12 @@
               cat.border === "gold" ? "cat-border-gold" : "cat-border-none";
             const imgClasses = `${shapeClass} ${borderClass}`;
 
-            // إضافة للناف بار
             const newNavBtn = document.createElement("a");
             newNavBtn.className = "a-nav";
             newNavBtn.href = "#" + sectionId;
             newNavBtn.innerHTML = `<h2><span style="font-size: 21px; margin-bottom: 5px; display:block;">${cat.name}</span><img src="${cat.imageUrl}" class="${imgClasses}" alt="${cat.name}"></h2>`;
             mainNav.appendChild(newNavBtn);
 
-            // إضافة قسم للأطباق
             const sectionWrapper = document.createElement("div");
             sectionWrapper.className = "category-section";
             sectionWrapper.id = sectionId;
@@ -552,15 +564,7 @@
             appContainer.appendChild(sectionWrapper);
           });
 
-          // 2️⃣ جلب الأطباق
-          const dishRef = collection(
-            db,
-            "restaurants",
-            RESTAURANT_OWNER_EMAIL,
-            "menuItems",
-          );
-          const dishSnap = await getDocs(dishRef);
-
+          // --- معالجة الأطباق ---
           let dishes = [];
           dishSnap.forEach((doc) => {
             dishes.push({ id: doc.id, ...doc.data() });
@@ -598,9 +602,7 @@
             }
           });
 
-          // 3️⃣ جلب قائمة الوجبات العشوائية
-          const restDocRef = doc(db, "restaurants", RESTAURANT_OWNER_EMAIL);
-          const restDocSnap = await getDoc(restDocRef);
+          // --- معالجة الوجبة العشوائية ---
           if (restDocSnap.exists() && restDocSnap.data().randomMealPool) {
             window.customerRandomPool = restDocSnap.data().randomMealPool;
           }
