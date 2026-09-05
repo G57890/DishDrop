@@ -849,14 +849,33 @@
 
       async function loadMenuData() {
         try {
-          const catRef = collection(
-            db,
+          // 1️⃣ تجهيز مسارات البيانات
+          const catRef = window.collection(
+            window.db,
             "restaurants",
             window.currentUserEmail,
             "categories",
           );
-          const catSnap = await getDocs(catRef);
+          const dishRef = window.collection(
+            window.db,
+            "restaurants",
+            window.currentUserEmail,
+            "menuItems",
+          );
+          const restDocRef = window.doc(
+            window.db,
+            "restaurants",
+            window.currentUserEmail,
+          );
 
+          // 2️⃣ السحر هنا: نرسل الـ 3 طلبات لفايربيس بنفس اللحظة (يختصر وقت التحميل للإدمن)
+          const [catSnap, dishSnap, restDocSnap] = await Promise.all([
+            window.getDocs(catRef),
+            window.getDocs(dishRef),
+            window.getDoc(restDocRef),
+          ]);
+
+          // --- معالجة الأقسام ---
           let cats = [];
           catSnap.forEach((doc) => {
             cats.push({ id: doc.id, ...doc.data() });
@@ -922,14 +941,7 @@
 
           window.categoryCount = highestCatNum;
 
-          const dishRef = collection(
-            db,
-            "restaurants",
-            window.currentUserEmail,
-            "menuItems",
-          );
-          const dishSnap = await getDocs(dishRef);
-
+          // --- معالجة الأطباق ---
           let dishes = [];
           dishSnap.forEach((doc) => {
             dishes.push({ id: doc.id, ...doc.data() });
@@ -977,13 +989,7 @@
             }
           });
 
-          // استرجاع الوجبات العشوائية
-          const restDocRef = window.doc(
-            window.db,
-            "restaurants",
-            window.currentUserEmail,
-          );
-          const restDocSnap = await window.getDoc(restDocRef);
+          // --- معالجة الوجبة العشوائية ---
           if (restDocSnap.exists() && restDocSnap.data().randomMealPool) {
             window.randomMealPool = restDocSnap.data().randomMealPool;
             if (typeof renderRandomPoolList === "function")
