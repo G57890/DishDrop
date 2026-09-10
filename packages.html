@@ -1,0 +1,562 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DishDrop | Packages</title>
+    <link
+      rel="shortcut icon"
+      href="images/ChatGPT Image Jun 28, 2025, 06_12_44 PM (1).png"
+      type="image/x-icon"
+    />
+
+    <!-- استيراد الخطين معاً -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        --light-blue: #a3cbed;
+        --yellow: #fce300;
+        --text-dark: #333333;
+        --bg-color: #f9f9f9;
+      }
+
+      /* تحديد الخط بناءً على لغة الصفحة */
+      html[lang="en"] body,
+      html[lang="en"] input,
+      html[lang="en"] button {
+        font-family: "Roboto", sans-serif;
+      }
+      html[lang="ar"] body,
+      html[lang="ar"] input,
+      html[lang="ar"] button {
+        font-family: "Tajawal", sans-serif;
+      }
+
+      body {
+        background-color: var(--bg-color);
+        color: var(--text-dark);
+        margin: 0;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      /* --- تنسيق زر الرجوع --- */
+      .back-btn-container {
+        width: 100%;
+        max-width: 1200px;
+        display: flex;
+        justify-content: flex-start; /* هذا السطر يخليه يمين بالعربي ويسار بالإنجليزي تلقائياً */
+        margin-bottom: 10px;
+      }
+
+      .back-btn {
+        display: inline-block;
+        background-color: rgb(255, 255, 255);
+        color: #1a2229 !important;
+        padding: 8px 20px;
+        text-decoration: none !important;
+        border-radius: 30px;
+        font-weight: 700;
+        font-size: 1.2rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        border-bottom: 2px solid #2b2a2a;
+        transition: all 0.1s ease;
+      }
+
+      .back-btn:active {
+        border-bottom: 0px solid black;
+        transform: translateY(2px);
+      }
+
+      .header-title {
+        text-align: center;
+        font-size: 2.5rem;
+        margin-bottom: 40px;
+        color: var(--text-dark);
+        border-bottom: 4px solid var(--yellow);
+        display: inline-block;
+        padding-bottom: 10px;
+      }
+
+      .packages-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 30px;
+        justify-content: center;
+        width: 100%;
+        max-width: 1200px;
+      }
+
+      .package-card {
+        background-color: white;
+        width: 100%;
+        max-width: 300px;
+        box-sizing: border-box;
+        padding: 30px 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        text-align: center;
+        border-inline-start: 10px solid var(--yellow);
+        border-inline-end: 10px solid var(--light-blue);
+        transition: transform 0.3s ease;
+        position: relative; /* عشان علامة الخصم */
+      }
+
+      .package-card:hover {
+        transform: translateY(-5px);
+      }
+
+      .package-title {
+        font-size: 1.5rem;
+        font-weight: bold;
+        margin-bottom: 10px;
+      }
+
+      /* تنسيقات السعر والخصم (الترتيب الجديد المريح للعين) */
+      .price-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0px; /* مسافة خفيفة ومريحة بين العناصر */
+        margin-bottom: 20px;
+      }
+
+      .limited-offer {
+        background-color: #ff4d4d;
+        color: white;
+        font-size: 0.8rem;
+        font-weight: bold;
+        padding: 4px 12px;
+        border-radius: 20px;
+        display: inline-block;
+        margin-top: 5px;
+        margin-bottom: 1px;
+      }
+
+      .old-price {
+        font-size: 15px;
+        color: #999;
+        text-decoration: line-through;
+        font-weight: 500;
+        margin: 0; /* شلنا المسافة الجانبية عشان يصير بالنص بالضبط */
+      }
+
+      .package-price {
+        font-size: 30px;
+        color: #d32f2f;
+        font-weight: bold;
+        margin: 0;
+      }
+
+      .select-btn {
+        background-color: var(--yellow);
+        color: var(--text-dark);
+        border: none;
+        padding: 12px 25px;
+        font-size: 1.1rem;
+        font-weight: bold;
+        border-radius: 5px;
+        cursor: pointer;
+        width: 100%;
+        transition: background 0.3s;
+        margin-bottom: 20px;
+      }
+
+      .select-btn:hover {
+        background-color: #e6ce00;
+      }
+
+      .package-desc {
+        font-size: 1.05rem;
+        font-weight: 500;
+        line-height: 1.6;
+        color: #333;
+        margin-bottom: 0;
+      }
+
+      /* نافذة الطلب */
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+      }
+
+      .modal-content {
+        background-color: white;
+        padding: 30px;
+        border-radius: 10px;
+        width: 90%;
+        max-width: 400px;
+        box-sizing: border-box;
+        border-top: 8px solid var(--light-blue);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        position: relative;
+        max-height: 85vh;
+        overflow-y: auto;
+      }
+
+      .close-btn {
+        position: absolute;
+        top: 15px;
+        inset-inline-end: 15px;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: #888;
+      }
+
+      .close-btn:hover {
+        color: red;
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+        text-align: start;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: bold;
+      }
+
+      .form-group input {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 1rem;
+        box-sizing: border-box;
+      }
+
+      .form-group input:focus {
+        outline: none;
+        border-color: var(--light-blue);
+      }
+
+      .optional-note {
+        font-size: 0.8rem;
+        color: #888;
+      }
+
+      .submit-btn {
+        background-color: #0056b3;
+        color: white;
+        border: none;
+        padding: 12px 25px;
+        font-size: 1.1rem;
+        font-weight: bold;
+        border-radius: 5px;
+        cursor: pointer;
+        width: 100%;
+        transition: background 0.3s;
+        margin-top: 10px;
+      }
+
+      .submit-btn:hover {
+        background-color: #004494;
+      }
+
+      @media (max-width: 400px) {
+        .header-title {
+          font-size: 2rem;
+        }
+        .package-title {
+          font-size: 1.7rem;
+        }
+        .package-price {
+          font-size: 1.9rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- زر الرجوع -->
+    <div class="back-btn-container">
+      <a href="index.html" class="back-btn" id="backBtn">الرجوع</a>
+    </div>
+
+    <h1 class="header-title" id="pageTitle">الباقات</h1>
+
+    <div class="packages-container">
+      <!-- الباقة الأولى (الأساسية) -->
+      <div class="package-card">
+        <div class="package-title" id="pkg1Title">الباقة الأساسية</div>
+        <div class="price-container">
+          <span class="limited-offer offer-badge">لفترة محدودة</span><br />
+          <span class="old-price" id="pkg1OldPrice">180 د.ك</span>
+          <span class="package-price" id="pkg1Price">150 د.ك</span>
+        </div>
+        <button class="select-btn btn-order" onclick="openModal('pkg1')">
+          اطلب الباقة
+        </button>
+        <div class="package-desc" id="pkg1Desc">
+          برمجة المنيو الإلكتروني + جلسة تصوير للأطباق في موقع المطعم (تسليم 15
+          إلى 20 صورة، مع إمكانية زيادة الصور برسوم إضافية).
+        </div>
+      </div>
+
+      <!-- الباقة الثانية (المنيو) -->
+      <div class="package-card">
+        <div class="package-title" id="pkg2Title">المنيو الإلكتروني</div>
+        <div class="price-container">
+          <span class="limited-offer offer-badge">لفترة محدودة</span><br />
+          <span class="old-price" id="pkg2OldPrice">100 د.ك</span>
+          <span class="package-price" id="pkg2Price">85 د.ك</span>
+        </div>
+        <button class="select-btn btn-order" onclick="openModal('pkg2')">
+          اطلب الباقة
+        </button>
+        <div class="package-desc" id="pkg2Desc">
+          برمجة المنيو الإلكتروني (يتم رفع صوركم الخاصة).
+        </div>
+      </div>
+
+      <!-- الباقة الثالثة (التصوير) -->
+      <div class="package-card">
+        <div class="package-title" id="pkg3Title">باقة التصوير</div>
+        <div class="price-container">
+          <span class="limited-offer offer-badge">لفترة محدودة</span><br />
+          <span class="old-price" id="pkg3OldPrice">100 د.ك</span>
+          <span class="package-price" id="pkg3Price">85 د.ك</span>
+        </div>
+        <button class="select-btn btn-order" onclick="openModal('pkg3')">
+          اطلب الباقة
+        </button>
+        <div class="package-desc" id="pkg3Desc">
+          جلسة تصوير للأطعمة في موقع المطعم (تسليم 15 إلى 20 صورة).
+        </div>
+      </div>
+    </div>
+
+    <!-- النافذة المنبثقة -->
+    <div id="orderModal" class="modal">
+      <div class="modal-content">
+        <span class="close-btn" onclick="closeModal()">&times;</span>
+        <h2 id="modalTitle" style="margin-top: 0">بيانات الطلب</h2>
+        <p style="color: #555; font-size: 0.9rem">
+          <span id="modalSubtext">الباقة المختارة:</span>
+          <strong id="selectedPackageText"></strong>
+        </p>
+
+        <div class="form-group">
+          <label for="restName" id="labelRest">اسم المحل/المطعم *</label>
+          <input type="text" id="restName" required />
+        </div>
+
+        <div class="form-group">
+          <label for="contactName" id="labelName">اسمك الكريم *</label>
+          <input type="text" id="contactName" required />
+        </div>
+
+        <div class="form-group">
+          <label for="instaName" id="labelInsta"
+            >حساب الانستغرام (اختياري)</label
+          >
+          <input type="text" id="instaName" placeholder="@Restaurant" />
+          <span class="optional-note" id="noteInsta"
+            >يمكنك تركه فارغاً إذا لم يكن متوفراً</span
+          >
+        </div>
+
+        <button class="submit-btn" id="btnSubmit" onclick="sendToWhatsApp()">
+          أرسل الطلب عبر الواتساب
+        </button>
+      </div>
+    </div>
+
+    <script>
+      // قاموس الترجمة
+      const translations = {
+        en: {
+          backBtn: "Back",
+          pageTitle: "Packages",
+          btnOrder: "Order Package",
+          offerBadge: "Limited Time Offer",
+          pkg1: {
+            title: "The Prime Package",
+            oldPrice: "180 KD",
+            price: "150 KD",
+            desc: "Digital menu programming + on-site food photography session (15 to 20 photos delivered, with the option to add more photos for an extra fee).",
+          },
+          pkg2: {
+            title: "Digital Menu Package",
+            oldPrice: "100 KD",
+            price: "85 KD",
+            desc: "Digital menu programming (you upload your own photos).",
+          },
+          pkg3: {
+            title: "Photography Package",
+            oldPrice: "100 KD",
+            price: "85 KD",
+            desc: "On-site food photography session (15 to 20 photos delivered).",
+          },
+          modalTitle: "Order Details",
+          modalSubtext: "Selected Package: ",
+          labelRest: "Shop/Restaurant Name *",
+          placeRest: "Enter shop or restaurant name",
+          labelName: "Your Name *",
+          placeName: "Enter your full name",
+          labelInsta: "Instagram Account (Optional)",
+          noteInsta: "You can leave this blank if not available",
+          btnSubmit: "Send Order via WhatsApp",
+          alertMsg:
+            "Please fill in the required fields (Shop/Restaurant Name and Your Name).",
+        },
+        ar: {
+          backBtn: "الرجوع",
+          pageTitle: "الباقات",
+          btnOrder: "اطلب الباقة",
+          offerBadge: "عرض لفترة محدودة",
+          pkg1: {
+            title: "الباقة الأساسية",
+            oldPrice: "180 د.ك",
+            price: "150 د.ك",
+            desc: "برمجة المنيو الإلكتروني + جلسة تصوير للأطباق في موقع المطعم (تسليم 15 إلى 20 صورة، مع إمكانية زيادة الصور برسوم إضافية).",
+          },
+          pkg2: {
+            title: "المنيو الإلكتروني",
+            oldPrice: "100 د.ك",
+            price: "85 د.ك",
+            desc: "برمجة المنيو الإلكتروني (يتم رفع صوركم الخاصة).",
+          },
+          pkg3: {
+            title: "باقة التصوير",
+            oldPrice: "100 د.ك",
+            price: "85 د.ك",
+            desc: "جلسة تصوير للأطعمة في موقع المطعم (تسليم 15 إلى 20 صورة).",
+          },
+          modalTitle: "بيانات الطلب",
+          modalSubtext: "الباقة المختارة: ",
+          labelRest: "اسم المحل/المطعم *",
+          placeRest: "أدخل اسم المطعم أو المحل",
+          labelName: "اسمك الكريم *",
+          placeName: "أدخل اسمك للتواصل",
+          labelInsta: "حساب الانستغرام (اختياري)",
+          noteInsta: "يمكنك تركه فارغاً إذا لم يكن متوفراً",
+          btnSubmit: "أرسل الطلب عبر الواتساب",
+          alertMsg: "الرجاء تعبئة الحقول المطلوبة (اسم المحل/المطعم واسمك).",
+        },
+      };
+
+      let currentLang = "ar";
+      let currentPackageKey = "";
+
+      window.addEventListener("DOMContentLoaded", () => {
+        currentLang = localStorage.getItem("dishdrop_lang") || "ar";
+
+        const htmlTag = document.documentElement;
+        htmlTag.lang = currentLang;
+        htmlTag.dir = currentLang === "ar" ? "rtl" : "ltr";
+
+        const t = translations[currentLang];
+
+        // تحديث النصوص
+        document.getElementById("pageTitle").innerText = t.pageTitle;
+        document.getElementById("backBtn").innerText = t.backBtn;
+        document
+          .querySelectorAll(".offer-badge")
+          .forEach((badge) => (badge.innerText = t.offerBadge));
+        document
+          .querySelectorAll(".btn-order")
+          .forEach((btn) => (btn.innerText = t.btnOrder));
+
+        // الباقة 1
+        document.getElementById("pkg1Title").innerText = t.pkg1.title;
+        document.getElementById("pkg1OldPrice").innerText = t.pkg1.oldPrice;
+        document.getElementById("pkg1Price").innerText = t.pkg1.price;
+        document.getElementById("pkg1Desc").innerText = t.pkg1.desc;
+
+        // الباقة 2
+        document.getElementById("pkg2Title").innerText = t.pkg2.title;
+        document.getElementById("pkg2OldPrice").innerText = t.pkg2.oldPrice;
+        document.getElementById("pkg2Price").innerText = t.pkg2.price;
+        document.getElementById("pkg2Desc").innerText = t.pkg2.desc;
+
+        // الباقة 3
+        document.getElementById("pkg3Title").innerText = t.pkg3.title;
+        document.getElementById("pkg3OldPrice").innerText = t.pkg3.oldPrice;
+        document.getElementById("pkg3Price").innerText = t.pkg3.price;
+        document.getElementById("pkg3Desc").innerText = t.pkg3.desc;
+
+        document.getElementById("modalTitle").innerText = t.modalTitle;
+        document.getElementById("modalSubtext").innerText = t.modalSubtext;
+
+        const restInput = document.getElementById("restName");
+        document.getElementById("labelRest").innerText = t.labelRest;
+        restInput.placeholder = t.placeRest;
+
+        const nameInput = document.getElementById("contactName");
+        document.getElementById("labelName").innerText = t.labelName;
+        nameInput.placeholder = t.placeName;
+
+        document.getElementById("labelInsta").innerText = t.labelInsta;
+        document.getElementById("noteInsta").innerText = t.noteInsta;
+
+        document.getElementById("btnSubmit").innerText = t.btnSubmit;
+      });
+
+      function openModal(packageKey) {
+        currentPackageKey = packageKey;
+        const t = translations[currentLang];
+        document.getElementById("selectedPackageText").innerText =
+          t[packageKey].title;
+        document.getElementById("orderModal").style.display = "flex";
+      }
+
+      function closeModal() {
+        document.getElementById("orderModal").style.display = "none";
+      }
+
+      function sendToWhatsApp() {
+        const restName = document.getElementById("restName").value.trim();
+        const contactName = document.getElementById("contactName").value.trim();
+        const instaName = document.getElementById("instaName").value.trim();
+
+        if (!restName || !contactName) {
+          alert(translations[currentLang].alertMsg);
+          return;
+        }
+
+        const packageTitle = translations[currentLang][currentPackageKey].title;
+        let message = "";
+
+        if (currentLang === "ar") {
+          message = `مرحباً،\nمعاك ${contactName} من محل/مطعم ${restName}،\nوحاب آخذ ${packageTitle}.`;
+          if (instaName) message += `\nوهذا انستغرامي: ${instaName}`;
+        } else {
+          message = `Hello,\nThis is ${contactName} from ${restName}.\nI'd like to get the ${packageTitle}.`;
+          if (instaName) message += `\nHere is our Instagram: ${instaName}`;
+        }
+
+        const phoneNumber = "96550018618";
+        const encodedMessage = encodeURIComponent(message);
+        const whatsappURL =
+          "https://wa.me/" + phoneNumber + "?text=" + encodedMessage;
+
+        window.open(whatsappURL, "_blank");
+
+        document.getElementById("restName").value = "";
+        document.getElementById("contactName").value = "";
+        document.getElementById("instaName").value = "";
+        closeModal();
+      }
+    </script>
+  </body>
+</html>
