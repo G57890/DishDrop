@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DishDrop | Clients</title>
+    <link
+      rel="shortcut icon"
+      href="images/ChatGPT Image Jun 28, 2025, 06_12_44 PM (1).png"
+      type="image/x-icon"
+    />
+
+    <!-- استيراد الخطين معاً -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        --light-blue: #a3cbed;
+        --yellow: #fce300;
+        --text-dark: #333333;
+        --bg-color: #f9f9f9;
+      }
+
+      /* تحديد الخط بناءً على لغة الصفحة */
+      html[lang="en"] body {
+        font-family: "Roboto", sans-serif;
+      }
+      html[lang="ar"] body {
+        font-family: "Tajawal", sans-serif;
+      }
+
+      body {
+        background-color: var(--bg-color);
+        color: var(--text-dark);
+        margin: 0;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-height: 100vh;
+      }
+
+      /* --- تنسيق زر الرجوع --- */
+      .back-btn-container {
+        width: 100%;
+        max-width: 1200px;
+        display: flex;
+        justify-content: flex-start;
+        margin-bottom: 20px;
+      }
+
+      .back-btn {
+        display: inline-block;
+        background-color: #acd5f5;
+        color: #1a2229 !important;
+        padding: 8px 20px;
+        text-decoration: none !important;
+        border-radius: 30px;
+        font-weight: 700;
+        font-size: 1rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        border-bottom: 2px solid #2b2a2a;
+        transition: all 0.3s ease;
+      }
+
+      .back-btn:active {
+        border-bottom: 0px solid black;
+        transform: translateY(2px);
+      }
+
+      /* --- تنسيق العنوان الأساسي --- */
+      .header-title {
+        text-align: center;
+        font-size: 2.5rem;
+        margin-bottom: 40px;
+        color: var(--text-dark);
+        border-bottom: 4px solid var(--yellow);
+        display: inline-block;
+        padding-bottom: 10px;
+      }
+
+      /* --- تنسيق رسالة قريباً --- */
+      .coming-soon-box {
+        background-color: white;
+        padding: 40px;
+        border-radius: 12px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
+        text-align: center;
+        max-width: 600px;
+        width: 90%;
+        border-inline-start: 10px solid var(--yellow);
+        border-inline-end: 10px solid var(--light-blue);
+        margin-top: 20px;
+        animation: fadeIn 0.8s ease-out forwards;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .coming-soon-box h2 {
+        font-size: 2rem;
+        color: var(--text-dark);
+        margin-bottom: 15px;
+        margin-top: 0;
+      }
+
+      .coming-soon-box p {
+        font-size: 1.2rem;
+        line-height: 1.8;
+        color: #555;
+        font-weight: 500;
+        margin-bottom: 0;
+      }
+
+      /* دعم شاشات الموبايل */
+      @media (max-width: 400px) {
+        .header-title {
+          font-size: 2rem;
+        }
+        .coming-soon-box {
+          padding: 30px 20px;
+        }
+        .coming-soon-box h2 {
+          font-size: 1.6rem;
+        }
+        .coming-soon-box p {
+          font-size: 1.05rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- زر الرجوع -->
+    <div class="back-btn-container">
+      <a href="index.html" class="back-btn" id="backBtn">العودة</a>
+    </div>
+
+    <!-- العنوان -->
+    <h1 class="header-title" id="pageTitle">عملاؤنا</h1>
+
+    <!-- صندوق رسالة قريباً -->
+    <div class="coming-soon-box">
+      <h2 id="comingSoonTitle">قريباً جداً!</h2>
+      <p id="comingSoonText">
+        نعمل حالياً على تجهيز وإطلاق مشاريع جديدة ومميزة. سيتم عرض القوائم
+        الرقمية لعملائنا الجدد هنا في أقرب وقت ممكن.
+      </p>
+    </div>
+
+    <script>
+      // قاموس الترجمة
+      const translations = {
+        en: {
+          backBtn: "Back",
+          pageTitle: "Our Clients",
+          comingSoonTitle: "Coming Soon!",
+          comingSoonText:
+            "Our clients' digital menus will be added to this section very soon.",
+        },
+        ar: {
+          backBtn: "العودة",
+          pageTitle: "عملاؤنا",
+          comingSoonTitle: "قريباً جداً!",
+          comingSoonText: "سيتم عرض قوائم عملائنا الرقمية في هذا القسم قريباً.",
+        },
+      };
+
+      // دالة تطبيق اللغة عند فتح الصفحة
+      window.addEventListener("DOMContentLoaded", () => {
+        // قراءة اللغة من الذاكرة (التي تم حفظها في الصفحة الرئيسية)
+        const currentLang = localStorage.getItem("dishdrop_lang") || "ar";
+
+        const htmlTag = document.documentElement;
+        htmlTag.lang = currentLang;
+        htmlTag.dir = currentLang === "ar" ? "rtl" : "ltr";
+
+        const t = translations[currentLang];
+
+        // تحديث النصوص في الصفحة
+        document.getElementById("backBtn").innerText = t.backBtn;
+        document.getElementById("pageTitle").innerText = t.pageTitle;
+        document.getElementById("comingSoonTitle").innerText =
+          t.comingSoonTitle;
+        document.getElementById("comingSoonText").innerText = t.comingSoonText;
+      });
+    </script>
+  </body>
+</html>
