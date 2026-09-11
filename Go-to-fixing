@@ -1,0 +1,5 @@
+<script>
+    if (window.location.search !== "?admin=115") {
+        window.location.replace("maintenance.html");
+    }
+</script>
