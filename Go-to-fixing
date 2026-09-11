@@ -1,11 +1,11 @@
 <script>
-    if (window.location.search !== "?admin=115") {
+    if (window.location.search !== "?admin=1") {
         window.location.replace("fixing.html");
     }
 </script>
 
 <script>
-    if (window.location.search !== "?admin=115") {
+    if (window.location.search !== "?admin=1") {
         window.location.replace("../fixing.html");
     }
 </script>
