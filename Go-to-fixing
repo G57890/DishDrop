@@ -1,11 +1,15 @@
 <script>
-    if (window.location.search !== "?admin=1") {
+    if (window.location.search !== "?admin=115") {
         window.location.replace("fixing.html");
     }
 </script>
 
+----------------------------------------------------
+for htmls inside a folder
+v     v     v     v     v
+
 <script>
-    if (window.location.search !== "?admin=1") {
+    if (window.location.search !== "?admin=115") {
         window.location.replace("../fixing.html");
     }
 </script>
