@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تحت الصيانة | Under Maintenance</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-align: center;
+            color: #333;
+        }
+        .maintenance-box {
+            background: #ffffff;
+            padding: 40px 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            max-width: 400px;
+            width: 85%;
+        }
+        .icon {
+            font-size: 50px;
+            margin-bottom: 20px;
+        }
+        .english-text {
+            margin-bottom: 25px;
+            padding-bottom: 25px;
+            border-bottom: 1px solid #eeeeee;
+        }
+        .arabic-text {
+            margin-top: 10px;
+        }
+        h1 {
+            font-size: 22px;
+            margin: 0 0 10px 0;
+            color: #2c3e50;
+        }
+        p {
+            font-size: 15px;
+            margin: 0;
+            color: #666;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="maintenance-box">
+        <div class="icon">⚙️</div>
+        
+        <!-- القسم الإنجليزي -->
+        <div class="english-text" dir="ltr">
+            <h1>Under Maintenance</h1>
+            <p>We are currently updating our menu.<br>Please check back shortly.</p>
+        </div>
+
+        <!-- القسم العربي -->
+        <div class="arabic-text" dir="rtl">
+            <h1>الموقع تحت الصيانة</h1>
+            <p>نقوم حالياً بتحديث قائمة الطعام.<br>يرجى معاودة الزيارة بعد قليل.</p>
+        </div>
+    </div>
+
+</body>
+</html>
