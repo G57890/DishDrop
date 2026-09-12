@@ -429,7 +429,14 @@
             console.error("حدث خطأ في التسجيل بواسطة Google", error);
           }
         });
+
+      ["password", "email"].forEach((id) => {
+        document.getElementById(id).addEventListener("keydown", function (e) {
+          if (e.key === " ") {
+            e.preventDefault();
+          }
+        });
+      });
     </script>
   </body>
 </html>
-
