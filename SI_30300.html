@@ -212,12 +212,7 @@
         البريد الإلكتروني أو الرقم السري غير صحيح.
       </div>
 
-      <input
-        type="email"
-        id="email"
-        placeholder="البريد الإلكتروني"
-        required
-      />
+      <input type="email" id="email" placeholder="البريد الإلكتروني" required />
 
       <div class="password-wrapper">
         <input
@@ -307,8 +302,7 @@
 
       function updateLoginButton() {
         const hasData =
-          emailInput.value.trim() !== "" ||
-          passwordInput.value.trim() !== "";
+          emailInput.value.trim() !== "" || passwordInput.value.trim() !== "";
 
         loginBtn.disabled = !hasData;
       }
@@ -406,8 +400,7 @@
         signInWithEmailAndPassword(auth, e, p).catch(() => {
           loginBtn.innerText = "دخول";
 
-          loginError.innerText =
-            "البريد الإلكتروني أو الرقم السري غير صحيح.";
+          loginError.innerText = "البريد الإلكتروني أو الرقم السري غير صحيح.";
 
           loginError.style.display = "block";
 
@@ -415,11 +408,28 @@
         });
       });
 
-      document.getElementById("google-btn").addEventListener("click", () => {
-        signInWithPopup(auth, provider).catch(() => {
-          console.error("حدث خطأ في التسجيل بواسطة Google");
+      document
+        .getElementById("google-btn")
+        .addEventListener("click", async () => {
+          loginError.style.display = "none";
+
+          try {
+            const result = await signInWithPopup(auth, provider);
+            const user = result.user;
+
+            if (user.email === "yousef2008alqattan@gmail.com") {
+              window.location.href = "test/MMHpanel.html";
+            } else {
+              await auth.signOut();
+
+              loginError.innerText = "عذراً، هذا الحساب غير مصرح به.";
+              loginError.style.display = "block";
+            }
+          } catch (error) {
+            console.error("حدث خطأ في التسجيل بواسطة Google", error);
+          }
         });
-      });
     </script>
   </body>
 </html>
+
