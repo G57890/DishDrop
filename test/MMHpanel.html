@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" href="images/control-panel.webp" type="image/webp" />
+    <link rel="icon" href="images/control-panel.webp" />
     <title>Control Panel</title>
 
     <style>
@@ -836,6 +836,8 @@
         "https://pub-d668e540f90e462fafbac9028f5d69af.r2.dev";
 
       window.db = db;
+      window.auth = auth;
+      window.signOut = signOut;
       window.doc = doc;
       window.getDoc = getDoc;
       window.setDoc = setDoc;
@@ -1010,7 +1012,7 @@
 
         onAuthStateChanged(auth, async (user) => {
           if (!user) {
-            window.location.href = "SI_30300.html";
+            window.location.href = "../SI_30300.html";
           } else {
             try {
               // هذا الكود الأصلي مالك اللي يفحص مجلد admins
@@ -1024,7 +1026,7 @@
                 content.style.display = "block";
               } else {
                 await signOut(auth);
-                window.location.href = "SI_30300.html?error=unauthorized";
+                window.location.href = "../SI_30300.html?error=unauthorized";
               }
             } catch (error) {
               console.error("خطأ:", error);
@@ -1334,6 +1336,27 @@
         </div>
       </div>
     </div>
+    <!-- زر تسجيل الخروج -->
+    <div style="text-align: center; margin: 60px 0 40px; padding-bottom: 20px">
+      <button
+        onclick="handleLogout()"
+        style="
+          background-color: rgb(255, 32, 32);
+          color: #ffffff;
+          border: 2px solid #ec4533;
+          padding: 10px 30px;
+          border-radius: 30px;
+          font-size: 18px;
+          font-weight: bold;
+          cursor: pointer;
+          transition: 0.3s;
+          font-family: inherit;
+        "
+      >
+        تسجيل الخروج
+      </button>
+    </div>
+    <br />
 
     <!-- أكواد المنيو الرئيسية -->
     <script>
@@ -2480,6 +2503,21 @@
 
       // تشغيل النظام مع كل تمرير للشاشة
       window.addEventListener("scroll", activateSection);
+
+      
+      async function handleLogout() {
+        // رسالة التحذير قبل الخروج
+        const confirmOut = confirm("هل أنت متأكد أنك تريد تسجيل الخروج؟");
+
+        if (confirmOut) {
+          try {
+            await window.signOut(window.auth);
+
+          } catch (error) {
+            alert("حدث خطأ أثناء تسجيل الخروج: " + error.message);
+          }
+        }
+      }
     </script>
   </body>
 </html>
