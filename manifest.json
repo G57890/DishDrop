@@ -1,0 +1,22 @@
+{
+  "name": "DishDrop Control Panel",
+  "short_name": "DishDrop",
+  "description": "لوحة تحكم إدارة المطاعم لمنصة DishDrop",
+  "start_url": "./SI_30300.html",
+  "display": "standalone",
+  "background_color": "#75818f",
+  "theme_color": "#caac5e",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "images/dish-drop-192.png",
+      "sizes": "192x192",
+      "type": "image/webp"
+    },
+    {
+      "src": "images/dish-drop-512.png",
+      "sizes": "512x512",
+      "type": "image/webp"
+    }
+  ]
+}
