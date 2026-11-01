@@ -289,7 +289,7 @@
       </button>
     </div>
 
-    <script type="module">
+<script type="module">
       import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
 
       import {
@@ -298,6 +298,8 @@
         GoogleAuthProvider,
         signInWithPopup,
         onAuthStateChanged,
+        setPersistence,
+        browserLocalPersistence
       } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
       const firebaseConfig = {
@@ -406,7 +408,7 @@
         }
       });
 
-      loginBtn.addEventListener("click", () => {
+      loginBtn.addEventListener("click", async () => {
         const e = emailInput.value;
         const p = passwordInput.value;
 
@@ -418,15 +420,17 @@
         loginBtn.disabled = true;
         loginError.style.display = "none";
 
-        signInWithEmailAndPassword(auth, e, p).catch(() => {
+        try {
+          // إضافة فرض الجلسة هنا قبل الدخول
+          await setPersistence(auth, browserLocalPersistence);
+          await signInWithEmailAndPassword(auth, e, p);
+          // الدالة onAuthStateChanged اللي فوق راح تتكفل بالتحويل بمجرد نجاح الدخول
+        } catch (error) {
           loginBtn.innerText = "دخول";
-
           loginError.innerText = "البريد الإلكتروني أو الرقم السري غير صحيح.";
-
           loginError.style.display = "block";
-
           updateLoginButton();
-        });
+        }
       });
 
       document
@@ -435,6 +439,9 @@
           loginError.style.display = "none";
 
           try {
+            // إضافة فرض الجلسة هنا قبل دخول جوجل
+            await setPersistence(auth, browserLocalPersistence);
+            
             const result = await signInWithPopup(auth, provider);
             const user = result.user;
 
@@ -442,7 +449,6 @@
               window.location.href = "test/MMHpanel.html";
             } else {
               await auth.signOut();
-
               loginError.innerText = "عذراً، هذا الحساب غير مصرح به.";
               loginError.style.display = "block";
             }
