@@ -1,23 +1,25 @@
 <!doctype html>
 <html lang="ar" dir="rtl">
   <head>
-
     <!-- إعدادات PWA -->
-    <link rel="manifest" href="../manifest.json">
-    <meta name="theme-color" content="#75818f">
-    <link rel="apple-touch-icon" href="../images/dish-drop-ios-192.png">
-    
+    <link rel="manifest" href="../manifest.json" />
+    <meta name="theme-color" content="#75818f" />
+    <link rel="apple-touch-icon" href="../images/dish-drop-ios-192.png" />
+
     <script>
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('../service-worker.js')
-            .then(reg => console.log('Service Worker Registered!', reg))
-            .catch(err => console.error('Service Worker Registration Failed:', err));
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker
+            .register("../service-worker.js")
+            .then((reg) => console.log("Service Worker Registered!", reg))
+            .catch((err) =>
+              console.error("Service Worker Registration Failed:", err),
+            );
         });
       }
     </script>
     <!-- /إعدادات PWA -->
-    
+
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" href="images/control-panel.webp" />
@@ -93,6 +95,7 @@
         color: var(--text-light);
         padding-top: 145px;
         scroll-behavior: smooth;
+        padding-bottom: 90px; /* مساحة لشريط النشر */
       }
 
       .nav-wrapper {
@@ -128,6 +131,7 @@
           transparent
         );
       }
+
       .nav-wrapper::after {
         left: 0;
         background: linear-gradient(
@@ -136,9 +140,11 @@
           transparent
         );
       }
+
       .nav-wrapper.show-right-glow::before {
         opacity: 1;
       }
+
       .nav-wrapper.show-left-glow::after {
         opacity: 1;
       }
@@ -160,6 +166,7 @@
       .a-nav:first-of-type {
         margin-right: auto;
       }
+
       .a-nav:last-of-type {
         margin-left: auto;
       }
@@ -190,12 +197,15 @@
       .cat-shape-circle {
         border-radius: 50% !important;
       }
+
       .cat-shape-original {
         border-radius: 8px !important;
       }
+
       .cat-border-gold {
         border: 2px solid var(--gold) !important;
       }
+
       .cat-border-none {
         border: 2px solid transparent !important;
       }
@@ -240,6 +250,7 @@
         text-align: center;
         margin: 20px 0 40px;
       }
+
       .header-logo img {
         width: 200px;
       }
@@ -289,6 +300,7 @@
         gap: 10px;
         direction: rtl;
       }
+
       .section-controls button {
         background-color: var(--card-bg);
         border: 1px solid var(--gold);
@@ -300,6 +312,7 @@
         font-size: 14px;
         transition: 0.2s;
       }
+
       .section-controls button:hover {
         background-color: rgba(202, 172, 94, 0.2);
       }
@@ -328,7 +341,6 @@
         transition: box-shadow 0.3s ease;
       }
 
-      /* ستايلات شارة غير متوفر وتأثير التغبيش */
       .meal-card.unavailable .image-wrapper img,
       .meal-card.unavailable > .meal-title,
       .meal-card.unavailable > .meal-price {
@@ -342,7 +354,6 @@
         z-index: 11;
       }
 
-      /* الصندوق الجديد اللي يجمع الصورة والشريط */
       .image-wrapper {
         position: relative;
         width: 100%;
@@ -356,8 +367,8 @@
         bottom: 0;
         background: transparent;
         display: flex;
-        align-items: center; /* يتوسط بالطول برمجياً */
-        justify-content: center; /* يتوسط بالعرض برمجياً */
+        align-items: center;
+        justify-content: center;
         z-index: 10;
         pointer-events: none;
         text-align: center;
@@ -375,7 +386,6 @@
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
       }
 
-      /* لضمان أن أزرار التحكم بالأعلى والأسفل تكون واضحة وقابلة للضغط */
       .card-top-controls,
       .card-bottom-controls {
         position: relative;
@@ -395,16 +405,19 @@
         justify-content: space-between;
         width: 100%;
       }
+
       .card-top-controls {
         margin-bottom: 10px;
         padding-bottom: 5px;
         border-bottom: 1px dashed rgba(202, 172, 94, 0.5);
       }
+
       .card-bottom-controls {
         margin-top: 10px;
         padding-top: 10px;
         border-top: 1px dashed rgba(202, 172, 94, 0.5);
       }
+
       .card-top-controls button,
       .card-bottom-controls button {
         background: transparent;
@@ -414,6 +427,7 @@
         font-size: 20px;
         transition: 0.2s;
       }
+
       .card-top-controls button:hover,
       .card-bottom-controls button:hover {
         color: var(--gold);
@@ -531,6 +545,67 @@
         border-left: solid 5px black;
       }
 
+      /* شريط النشر العائم */
+      #publishBar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background-color: rgba(30, 35, 40, 0.95);
+        backdrop-filter: blur(10px);
+        box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 15px 20px;
+        gap: 15px; /* مسافة بين الأزرار */
+        z-index: 3000;
+        flex-wrap: nowrap; /* يمنع نزولهم سطر ثاني */
+        transform: translateY(calc(100% + 20px));
+        transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        border-top: 2px solid var(--gold);
+      }
+
+      #publishBar.active {
+        transform: translateY(0);
+      }
+
+      #publishBar .btn-publish {
+        background-color: rgb(187, 156, 76);
+        color: rgb(255, 255, 255);
+        border: none;
+        padding: 12px 20px;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        font-family: inherit;
+        transition: 0.2s;
+        flex: 1; /* يخلي الزر ياخذ مساحة ممتازة بالشريط */
+        white-space: nowrap;
+        text-align: center;
+      }
+
+      /* زر الإلغاء داخل شريط النشر فقط (مغمق وموسع) */
+      #publishBar .btn-cancel {
+        background-color: #7a7a7a !important; /* لون رمادي غامق */
+        color: #ffffff !important; /* خط أبيض للوضوح */
+        padding: 12px 20px;
+        flex: 1; /* يتوسع نفس زر النشر */
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: bold;
+        border: none;
+        cursor: pointer;
+        transition: 0.2s;
+        white-space: nowrap;
+        text-align: center;
+      }
+
+      #publishBar .btn-cancel:hover {
+        background-color: #666666 !important;
+      }
+
       .image-counter-box {
         position: fixed;
         bottom: 20px;
@@ -548,11 +623,18 @@
         align-items: center;
         gap: 8px;
         direction: ltr;
-        transition: 0.3s;
+        transition:
+          bottom 0.4s ease,
+          border-color 0.3s;
       }
+
       .image-counter-box.limit-reached {
         border-color: #e74c3c;
         color: #e74c3c;
+      }
+
+      .image-counter-box.lifted {
+        bottom: 85px;
       }
 
       .modal-overlay {
@@ -565,7 +647,7 @@
         display: none;
         justify-content: center;
         align-items: center;
-        z-index: 2000;
+        z-index: 3500;
         padding: 20px;
       }
 
@@ -727,6 +809,7 @@
         margin-top: 25px;
       }
 
+      /* أزرار الحفظ والإلغاء العامة (للنوافذ المنبثقة) */
       .modal-btns button {
         flex: 1;
         padding: 12px;
@@ -743,20 +826,25 @@
         background-color: var(--gold);
         color: #111;
       }
+
       .btn-save:hover {
         background-color: #dcc482;
       }
+
       .btn-cancel {
         background-color: #ccc;
         color: #333;
       }
+
       .btn-cancel:hover {
         background-color: #bbb;
       }
+
       .btn-danger {
         background-color: #e74c3c !important;
         color: white !important;
       }
+
       .btn-danger:hover {
         background-color: #c0392b !important;
       }
@@ -771,6 +859,7 @@
         margin-bottom: 5px;
         color: white;
       }
+
       .random-pool-item button {
         background: #e74c3c;
         color: white;
@@ -778,6 +867,63 @@
         border-radius: 4px;
         padding: 2px 8px;
         cursor: pointer;
+      }
+
+      /* Custom Modals (بدائل Alert & Confirm) */
+      .custom-modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.7);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 4000;
+        padding: 20px;
+      }
+
+      .custom-modal-box {
+        background: var(--modal-bg);
+        border: 2px solid var(--gold);
+        padding: 25px;
+        border-radius: 15px;
+        width: 100%;
+        max-width: 320px;
+        text-align: center;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+      }
+
+      .custom-modal-text {
+        font-size: 18px;
+        margin-bottom: 20px;
+        line-height: 1.5;
+        color: white;
+      }
+
+      /* Toast Notification (إشعار النجاح المعدل) */
+      #toastNotification {
+        position: fixed;
+        bottom: -80px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(46, 204, 113, 0.95);
+        color: white;
+        padding: 12px 30px; /* أوسع */
+        border-radius: 30px;
+        font-size: 17px;
+        font-weight: bold;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        z-index: 5000;
+        transition: bottom 0.4s ease;
+        white-space: nowrap; /* مستحيل ينزل سطرين */
+        text-align: center;
+        max-width: 90%;
+      }
+
+      #toastNotification.show {
+        bottom: 30px;
       }
 
       @media (min-width: 570px) {
@@ -811,6 +957,14 @@
           flex: 0 0 calc(25% - 20px);
         }
       }
+
+      @media (min-width: 500px) {
+        #publishBar .btn-publish,
+        #publishBar .btn-cancel {
+          flex: none !important;
+          width: 200px !important;
+        }
+      }
     </style>
 
     <script type="module">
@@ -832,6 +986,7 @@
         updateDoc,
         query,
         where,
+        writeBatch,
       } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
       const firebaseConfig = {
@@ -865,10 +1020,10 @@
       window.query = query;
       window.where = where;
       window.getDocs = getDocs;
+      window.writeBatch = writeBatch;
 
       async function loadMenuData() {
         try {
-          // 1️⃣ تجهيز مسارات البيانات
           const catRef = window.collection(
             window.db,
             "restaurants",
@@ -887,21 +1042,28 @@
             window.currentUserEmail,
           );
 
-          // 2️⃣ السحر هنا: نرسل الـ 3 طلبات لفايربيس بنفس اللحظة (يختصر وقت التحميل للإدمن)
           const [catSnap, dishSnap, restDocSnap] = await Promise.all([
             window.getDocs(catRef),
             window.getDocs(dishRef),
             window.getDoc(restDocRef),
           ]);
 
-          // --- معالجة الأقسام ---
           let cats = [];
           catSnap.forEach((doc) => {
             cats.push({ id: doc.id, ...doc.data() });
           });
-          cats.sort(
-            (a, b) => (a.createdAt?.seconds || 0) - (b.createdAt?.seconds || 0),
-          );
+
+          cats.sort((a, b) => {
+            const valA =
+              a.createdAt?.seconds !== undefined
+                ? a.createdAt.seconds
+                : a.createdAt || 0;
+            const valB =
+              b.createdAt?.seconds !== undefined
+                ? b.createdAt.seconds
+                : b.createdAt || 0;
+            return valA - valB;
+          });
 
           const mainNav = document.getElementById("mainNav");
           const appContainer = document.getElementById("appContainer");
@@ -917,6 +1079,10 @@
             const sectionId = cat.sectionId;
             const num = parseInt(sectionId.split("-")[1]);
             if (num > highestCatNum) highestCatNum = num;
+
+            if (cat.imageUrl) {
+              window.initialImages.push(cat.imageUrl);
+            }
 
             const shapeClass =
               cat.shape === "circle"
@@ -960,18 +1126,30 @@
 
           window.categoryCount = highestCatNum;
 
-          // --- معالجة الأطباق ---
           let dishes = [];
           dishSnap.forEach((doc) => {
             dishes.push({ id: doc.id, ...doc.data() });
           });
-          dishes.sort(
-            (a, b) => (a.createdAt?.seconds || 0) - (b.createdAt?.seconds || 0),
-          );
+
+          dishes.sort((a, b) => {
+            const valA =
+              a.createdAt?.seconds !== undefined
+                ? a.createdAt.seconds
+                : a.createdAt || 0;
+            const valB =
+              b.createdAt?.seconds !== undefined
+                ? b.createdAt.seconds
+                : b.createdAt || 0;
+            return valA - valB;
+          });
 
           dishes.forEach((dish) => {
             const gridContainer = document.getElementById(dish.gridId);
             if (gridContainer) {
+              if (dish.imageUrl) {
+                window.initialImages.push(dish.imageUrl);
+              }
+
               const isAvail = dish.isAvailable !== false;
               const availClass = isAvail ? "" : "unavailable";
               const overlayHTML = isAvail
@@ -1000,24 +1178,28 @@
                     <button class="btn-left-arrow" onclick="moveDish(this, 1)" title="يسار">◀️</button>
                 </div>
               `;
+
               const dishCard = document.createElement("div");
               dishCard.className = `meal-card ${availClass}`;
               dishCard.innerHTML = innerHTMLContent;
+
               const addDishBtn = gridContainer.querySelector(".add-dish-card");
               gridContainer.insertBefore(dishCard, addDishBtn);
             }
           });
 
-          // --- معالجة الوجبة العشوائية ---
           if (restDocSnap.exists() && restDocSnap.data().randomMealPool) {
             window.randomMealPool = restDocSnap.data().randomMealPool;
-            if (typeof renderRandomPoolList === "function")
+            if (typeof renderRandomPoolList === "function") {
               renderRandomPoolList();
+            }
           }
 
           if (typeof updateImageCounter === "function") updateImageCounter();
           if (typeof refreshArrows === "function") refreshArrows();
           if (typeof updateNavGlow === "function") updateNavGlow();
+
+          saveOriginalState();
         } catch (error) {
           console.error("خطأ في جلب البيانات:", error);
         }
@@ -1032,7 +1214,6 @@
             window.location.href = "../SI_30300.html";
           } else {
             try {
-              // هذا الكود الأصلي مالك اللي يفحص مجلد admins
               const docRef = doc(db, "admins", user.email);
               const docSnap = await getDoc(docRef);
 
@@ -1058,6 +1239,51 @@
     <div id="loader-screen">
       <div class="spinner" id="spinner"></div>
       <div id="loader-text"></div>
+    </div>
+
+    <!-- إشعار النشر الناجح Toast (المعدل بدون إيموجي وبسطر واحد) -->
+    <div id="toastNotification">تم النشر بنجاح</div>
+
+    <!-- نوافذ التنبيهات المخصصة -->
+    <div class="custom-modal-overlay" id="customAlertModal">
+      <div class="custom-modal-box">
+        <p class="custom-modal-text" id="customAlertText"></p>
+        <button
+          class="btn-save"
+          style="width: 100%"
+          onclick="
+            document.getElementById('customAlertModal').style.display = 'none'
+          "
+        >
+          حسناً
+        </button>
+      </div>
+    </div>
+
+    <div class="custom-modal-overlay" id="customConfirmModal">
+      <div class="custom-modal-box">
+        <p class="custom-modal-text" id="customConfirmText"></p>
+        <div class="modal-btns">
+          <button class="btn-save" id="customConfirmYes">نعم</button>
+          <button
+            class="btn-cancel"
+            onclick="
+              document.getElementById('customConfirmModal').style.display =
+                'none'
+            "
+          >
+            لا
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- شريط النشر العائم (بدون نص التنبيه المزعج) -->
+    <div id="publishBar">
+      <button class="btn-cancel" onclick="cancelChanges()">إلغاء</button>
+      <button class="btn-publish" id="publishBtn" onclick="publishChanges()">
+        نشر التعديلات
+      </button>
     </div>
 
     <!-- محتوى اللوحة -->
@@ -1105,6 +1331,7 @@
       <div class="modal-overlay" id="categoryModal">
         <div class="modal-content">
           <h3 id="catModalTitle">إضافة قسم جديد</h3>
+
           <div class="input-group">
             <label>اسم القسم:</label>
             <input
@@ -1187,6 +1414,7 @@
       <div class="modal-overlay" id="dishModal">
         <div class="modal-content">
           <h3 id="dishModalTitle">إضافة طبق جديد</h3>
+
           <div class="input-group">
             <label>اسم الطبق:</label>
             <input
@@ -1196,6 +1424,7 @@
               maxlength="40"
             />
           </div>
+
           <div class="input-group">
             <label>السعر (KWD):</label>
             <input
@@ -1208,6 +1437,7 @@
               "
             />
           </div>
+
           <div class="input-group">
             <label>التفاصيل (اختياري):</label>
             <textarea
@@ -1216,6 +1446,7 @@
               maxlength="150"
             ></textarea>
           </div>
+
           <div class="input-group">
             <label>صورة الطبق:</label>
             <input
@@ -1237,6 +1468,7 @@
               alt="معاينة"
             />
           </div>
+
           <div class="modal-btns">
             <button class="btn-save" onclick="saveDish()">حفظ</button>
             <button class="btn-cancel" onclick="closeDishModal()">إلغاء</button>
@@ -1250,6 +1482,7 @@
           <p style="font-size: 14px; color: #ccc; margin-bottom: 15px">
             اكتب اسم الطبق لإضافته إلى زر (وجبة عشوائية).
           </p>
+
           <div class="input-group">
             <input
               type="text"
@@ -1276,6 +1509,7 @@
               إضافة
             </button>
           </div>
+
           <div
             id="randomPoolList"
             style="
@@ -1291,6 +1525,7 @@
           >
             <!-- الأطباق المختارة ستظهر هنا -->
           </div>
+
           <div class="modal-btns">
             <button class="btn-cancel" onclick="closeRandomSettingsModal()">
               إغلاق
@@ -1353,6 +1588,7 @@
         </div>
       </div>
     </div>
+
     <!-- زر تسجيل الخروج -->
     <div style="text-align: center; margin: 60px 0 40px; padding-bottom: 20px">
       <button
@@ -1375,44 +1611,291 @@
     </div>
     <br />
 
-    <!-- أكواد المنيو الرئيسية -->
+    <!-- أكواد المنيو الرئيسية ونظام المسودة المتطور -->
     <script>
       let currentCatImageBase64 = "";
       let currentDishImageBase64 = "";
       const MAX_TOTAL_IMAGES = 100;
       let isMoving = false;
 
+      // متغيرات نظام المسودة (Offline-First)
+      window.isDraftMode = false;
+      window.tempImages = [];
+      window.initialImages = window.initialImages || [];
       window.randomMealPool = window.randomMealPool || [];
 
-      async function syncRandomPoolToFirebase() {
-        try {
-          const restDocRef = window.doc(
-            window.db,
-            "restaurants",
-            window.currentUserEmail,
-          );
-          await window.setDoc(
-            restDocRef,
-            { randomMealPool: window.randomMealPool },
-            { merge: true },
-          );
-        } catch (e) {
-          console.error("خطأ في حفظ الوجبة العشوائية:", e);
+      // دوال بديلة لرسائل المتصفح (Alert & Confirm)
+      function customAlert(msg) {
+        document.getElementById("customAlertText").textContent = msg;
+        document.getElementById("customAlertModal").style.display = "flex";
+      }
+
+      function customConfirm(msg, callback) {
+        document.getElementById("customConfirmText").textContent = msg;
+        const confirmBtn = document.getElementById("customConfirmYes");
+        confirmBtn.onclick = function () {
+          document.getElementById("customConfirmModal").style.display = "none";
+          callback();
+        };
+        document.getElementById("customConfirmModal").style.display = "flex";
+      }
+
+      function showToast() {
+        const toast = document.getElementById("toastNotification");
+        toast.classList.add("show");
+        setTimeout(() => {
+          toast.classList.remove("show");
+        }, 3000);
+      }
+
+      // ==========================================
+      // نظام تصوير حالة المنيو الذكي (Snapshot)
+      // ==========================================
+      window.originalMenuState = "";
+
+      function getCurrentMenuState() {
+        const state = [];
+        const sections = document.querySelectorAll(".category-section");
+
+        sections.forEach((section) => {
+          const catId = section.id;
+          const titleEl = section.querySelector(".section-title em");
+          const catName = titleEl ? titleEl.textContent.trim() : "";
+
+          const navImg = document.querySelector(`.a-nav[href="#${catId}"] img`);
+          const imgUrl = navImg ? navImg.src : "";
+          const shape = navImg
+            ? navImg.classList.contains("cat-shape-circle")
+              ? "circle"
+              : "original"
+            : "";
+          const border = navImg
+            ? navImg.classList.contains("cat-border-gold")
+              ? "gold"
+              : "none"
+            : "";
+
+          const dishes = [];
+          const cards = section.querySelectorAll(".meal-card");
+
+          cards.forEach((card) => {
+            const dishTitleEl = card.querySelector(".meal-title");
+            const priceEl = card.querySelector(".meal-price span");
+            const detailsEl = card.querySelector(".meal-details");
+            const imgEl = card.querySelector("img");
+
+            dishes.push({
+              name: dishTitleEl ? dishTitleEl.textContent.trim() : "",
+              price: priceEl ? priceEl.textContent.trim() : "",
+              details: detailsEl ? detailsEl.textContent.trim() : "",
+              imgUrl: imgEl ? imgEl.src : "",
+              isAvailable: !card.classList.contains("unavailable"),
+            });
+          });
+
+          state.push({ catId, catName, imgUrl, shape, border, dishes });
+        });
+
+        return { menu: state, randomPool: [...(window.randomMealPool || [])] };
+      }
+
+      function saveOriginalState() {
+        window.originalMenuState = JSON.stringify(getCurrentMenuState());
+      }
+
+      function checkDraftState() {
+        const currentState = JSON.stringify(getCurrentMenuState());
+        if (currentState !== window.originalMenuState) {
+          window.isDraftMode = true;
+          document.getElementById("publishBar").classList.add("active");
+          document.getElementById("imageCounterBox").classList.add("lifted");
+        } else {
+          window.isDraftMode = false;
+          document.getElementById("publishBar").classList.remove("active");
+          document.getElementById("imageCounterBox").classList.remove("lifted");
         }
+      }
+      // ==========================================
+
+      async function cancelChanges() {
+        customConfirm(
+          "هل أنت متأكد من إلغاء جميع التعديلات؟ (لا يمكن التراجع)",
+          async () => {
+            for (let imgUrl of window.tempImages) {
+              await deleteImageFromCloudflare(imgUrl);
+            }
+
+            // هذا السطر اللي يطفي المسودة ويمنع رسالة المتصفح المزعجة
+            window.isDraftMode = false;
+
+            location.reload();
+          },
+        );
+      }
+
+      // تعديل زر النشر ليطلب تأكيد مخصص قبل إرسال البيانات
+      async function publishChanges() {
+        customConfirm(
+          "هل أنت متأكد من نشر جميع التعديلات الحالية على الموقع؟",
+          async () => {
+            const publishBtn = document.getElementById("publishBtn");
+            publishBtn.textContent = "جاري النشر...";
+            publishBtn.disabled = true;
+
+            try {
+              const batch = window.writeBatch(window.db);
+              const email = window.currentUserEmail;
+
+              const catRef = window.collection(
+                window.db,
+                "restaurants",
+                email,
+                "categories",
+              );
+              const dishRef = window.collection(
+                window.db,
+                "restaurants",
+                email,
+                "menuItems",
+              );
+
+              const oldCats = await window.getDocs(catRef);
+              oldCats.forEach((doc) => {
+                batch.delete(doc.ref);
+              });
+
+              const oldDishes = await window.getDocs(dishRef);
+              oldDishes.forEach((doc) => {
+                batch.delete(doc.ref);
+              });
+
+              const baseTime = Date.now();
+              let catOrder = 1;
+              const currentDOMImages = [];
+
+              const sections = document.querySelectorAll(".category-section");
+
+              sections.forEach((section) => {
+                const sectionId = section.id;
+                const navLink = document.querySelector(
+                  `.a-nav[href="#${sectionId}"]`,
+                );
+
+                if (!navLink) return;
+
+                const catName = section
+                  .querySelector(".section-title em")
+                  .textContent.trim();
+                const imgElem = navLink.querySelector("img");
+                const imageUrl = imgElem.src;
+
+                if (imageUrl) {
+                  currentDOMImages.push(imageUrl);
+                }
+
+                const shape = imgElem.classList.contains("cat-shape-circle")
+                  ? "circle"
+                  : "original";
+                const border = imgElem.classList.contains("cat-border-gold")
+                  ? "gold"
+                  : "none";
+
+                const newCatRef = window.doc(catRef);
+                batch.set(newCatRef, {
+                  name: catName,
+                  imageUrl: imageUrl,
+                  shape: shape,
+                  border: border,
+                  sectionId: sectionId,
+                  createdAt: new Date(baseTime + catOrder * 1000),
+                });
+                catOrder++;
+
+                let dishOrder = 1;
+                const mealCards = section.querySelectorAll(".meal-card");
+
+                mealCards.forEach((card) => {
+                  const dishName = card
+                    .querySelector(".meal-title")
+                    .textContent.trim();
+                  const priceText = card
+                    .querySelector(".meal-price span")
+                    .textContent.replace(" KWD", "")
+                    .trim();
+                  const dishImgUrl = card.querySelector("img").src;
+
+                  if (dishImgUrl) {
+                    currentDOMImages.push(dishImgUrl);
+                  }
+
+                  const detailsElem = card.querySelector(".meal-details");
+                  const details = detailsElem
+                    ? detailsElem.textContent.trim()
+                    : "";
+                  const isAvailable = !card.classList.contains("unavailable");
+
+                  const newDishRef = window.doc(dishRef);
+                  batch.set(newDishRef, {
+                    name: dishName,
+                    price: priceText,
+                    details: details,
+                    imageUrl: dishImgUrl,
+                    gridId: `grid-${sectionId}`,
+                    isAvailable: isAvailable,
+                    createdAt: new Date(baseTime + dishOrder * 1000),
+                  });
+                  dishOrder++;
+                });
+              });
+
+              const restDocRef = window.doc(window.db, "restaurants", email);
+              batch.set(
+                restDocRef,
+                { randomMealPool: window.randomMealPool },
+                { merge: true },
+              );
+
+              await batch.commit();
+
+              for (let initialUrl of window.initialImages) {
+                if (!currentDOMImages.includes(initialUrl)) {
+                  await deleteImageFromCloudflare(initialUrl);
+                }
+              }
+
+              window.initialImages = currentDOMImages;
+              window.tempImages = [];
+
+              saveOriginalState();
+              checkDraftState();
+
+              showToast();
+            } catch (error) {
+              customAlert("خطأ أثناء النشر: " + error.message);
+            } finally {
+              publishBtn.textContent = "نشر التعديلات";
+              publishBtn.disabled = false;
+            }
+          },
+        );
       }
 
       function updateImageCounter() {
         const totalImages = document.querySelectorAll(
           "#mainNav .a-nav:not(.add-category-btn) img, .meal-card img",
         ).length;
+
         const counterBox = document.getElementById("imageCounterBox");
         const counterText = document.getElementById("imageCounterText");
+
         counterText.textContent = `${totalImages} / 100`;
+
         if (totalImages >= MAX_TOTAL_IMAGES) {
           counterBox.classList.add("limit-reached");
         } else {
           counterBox.classList.remove("limit-reached");
         }
+
         return totalImages;
       }
 
@@ -1425,8 +1908,10 @@
           };
           return;
         }
+
         const reader = new FileReader();
         reader.readAsDataURL(file);
+
         reader.onload = function (event) {
           const img = new Image();
           img.src = event.target.result;
@@ -1436,13 +1921,16 @@
             let width = img.width;
             let height = img.height;
             const MAX_WIDTH = 1080;
+
             if (width > MAX_WIDTH) {
               height = Math.round(height * (MAX_WIDTH / width));
               width = MAX_WIDTH;
             }
+
             canvas.width = width;
             canvas.height = height;
             ctx.drawImage(img, 0, 0, width, height);
+
             const compressedDataUrl = canvas.toDataURL("image/webp", 0.85);
             callback(compressedDataUrl);
           };
@@ -1456,8 +1944,11 @@
         const border = document.querySelector(
           'input[name="catBorder"]:checked',
         ).value;
+
         const preview = document.getElementById("catImagePreview");
+
         preview.className = "";
+
         preview.classList.add(
           shape === "circle" ? "cat-shape-circle" : "cat-shape-original",
         );
@@ -1481,20 +1972,24 @@
         .getElementById("catImageInput")
         .addEventListener("change", function (e) {
           const file = e.target.files[0];
+
           if (file && !file.type.startsWith("image/")) {
-            alert("عذراً، يسمح فقط برفع الصور!");
+            customAlert("عذراً، يسمح فقط برفع الصور!");
             e.target.value = "";
             document.getElementById("catFileName").textContent =
               "لم يتم اختيار أي ملف";
             return;
           }
+
           document.getElementById("catFileName").textContent = formatFileName(
             file ? file.name : null,
           );
+
           const preview = document.getElementById("catImagePreview");
           const optionsWrapper = document.getElementById(
             "catImageOptionsWrapper",
           );
+
           if (file) {
             compressImage(file, function (dataUrl) {
               currentCatImageBase64 = dataUrl;
@@ -1516,17 +2011,21 @@
         .getElementById("dishImageInput")
         .addEventListener("change", function (e) {
           const file = e.target.files[0];
+
           if (file && !file.type.startsWith("image/")) {
-            alert("عذراً، يسمح فقط برفع الصور!");
+            customAlert("عذراً، يسمح فقط برفع الصور!");
             e.target.value = "";
             document.getElementById("dishFileName").textContent =
               "لم يتم اختيار أي ملف";
             return;
           }
+
           document.getElementById("dishFileName").textContent = formatFileName(
             file ? file.name : null,
           );
+
           const preview = document.getElementById("dishImagePreview");
+
           if (file) {
             compressImage(file, function (dataUrl) {
               currentDishImageBase64 = dataUrl;
@@ -1549,6 +2048,7 @@
       function openCategoryModal(catId = null) {
         document.getElementById("categoryModal").style.display = "flex";
         editTargetCategory = catId ? document.getElementById(catId) : null;
+
         const preview = document.getElementById("catImagePreview");
         const optionsWrapper = document.getElementById(
           "catImageOptionsWrapper",
@@ -1558,25 +2058,33 @@
           document.getElementById("catModalTitle").textContent = "تعديل القسم";
           const titleElem =
             editTargetCategory.querySelector(".section-title em");
+
           document.getElementById("catNameInput").value = titleElem.textContent
             .replace(/~/g, "")
             .trim();
+
           document.getElementById("catFileName").textContent =
             "اختر صورة جديدة";
+
           const navLink = document.querySelector(
             `.a-nav[href="#${editTargetCategory.id}"]`,
           );
+
           const navImg = navLink.querySelector("img");
+
           document.querySelector(
             `input[name="catShape"][value="${navImg.classList.contains("cat-shape-original") ? "original" : "circle"}"]`,
           ).checked = true;
+
           document.querySelector(
             `input[name="catBorder"][value="${navImg.classList.contains("cat-border-none") ? "none" : "gold"}"]`,
           ).checked = true;
+
           preview.src = navImg.src;
           preview.style.display = "block";
           optionsWrapper.style.display = "flex";
           updateCatPreviewClasses();
+
           currentCatImageBase64 = "";
         } else {
           document.getElementById("catModalTitle").textContent =
@@ -1585,16 +2093,20 @@
           document.getElementById("catImageInput").value = "";
           document.getElementById("catFileName").textContent =
             "لم يتم اختيار أي ملف";
+
           document.querySelector(
             'input[name="catShape"][value="circle"]',
           ).checked = true;
+
           document.querySelector(
             'input[name="catBorder"][value="gold"]',
           ).checked = true;
+
           preview.src = "";
           preview.style.display = "none";
           optionsWrapper.style.display = "none";
           updateCatPreviewClasses();
+
           currentCatImageBase64 = "";
         }
       }
@@ -1620,10 +2132,12 @@
           if (!imageUrl || !imageUrl.includes(".r2.dev")) return;
           const rawFileName = imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
           const fileName = decodeURIComponent(rawFileName);
+
           const deleteUrl = window.CLOUDFLARE_WORKER_URL.replace(
             "/upload",
             "/delete",
           );
+
           await fetch(deleteUrl, {
             method: "DELETE",
             headers: { "Content-Type": "application/json" },
@@ -1632,6 +2146,31 @@
         } catch (e) {
           console.error("خطأ في حذف الصورة:", e);
         }
+      }
+
+      async function uploadImageToR2(base64Str, suggestedName) {
+        const imageBlob = dataURLtoBlob(base64Str);
+        const formData = new FormData();
+        formData.append(
+          "image",
+          imageBlob,
+          suggestedName.replace(/\s+/g, "-") + "-" + Date.now() + ".webp",
+        );
+
+        const uploadRes = await fetch(window.CLOUDFLARE_WORKER_URL, {
+          method: "POST",
+          body: formData,
+        });
+
+        if (!uploadRes.ok) throw new Error(await uploadRes.text());
+
+        const uploadData = await uploadRes.json();
+        const fullUrl =
+          window.CLOUDFLARE_PUBLIC_URL + "/" + uploadData.fileName;
+
+        window.tempImages.push(fullUrl);
+
+        return fullUrl;
       }
 
       async function saveCategory() {
@@ -1644,91 +2183,41 @@
         ).value;
 
         if (!name) {
-          alert("يرجى كتابة اسم القسم");
+          customAlert("يرجى كتابة اسم القسم");
           return;
         }
+
         if (!editTargetCategory && !currentCatImageBase64) {
-          alert("يرجى اختيار صورة للقسم الجديد");
+          customAlert("يرجى اختيار صورة للقسم الجديد");
           return;
         }
+
         if (!editTargetCategory && updateImageCounter() >= MAX_TOTAL_IMAGES) {
-          alert("عذراً، لقد وصلت للحد الأقصى");
+          customAlert("عذراً، لقد وصلت للحد الأقصى");
           return;
         }
 
         const saveBtn = document.querySelector("#categoryModal .btn-save");
         const originalBtnText = saveBtn.textContent;
-        saveBtn.textContent = "جاري الحفظ..";
+        saveBtn.textContent = "جاري المعالجة..";
         saveBtn.disabled = true;
 
         try {
           let finalImageUrl = "";
-          let oldImageUrl = editTargetCategory
-            ? document
-                .querySelector(`.a-nav[href="#${editTargetCategory.id}"]`)
-                .querySelector("img").src
-            : "";
-
-          if (currentCatImageBase64) {
-            const imageBlob = dataURLtoBlob(currentCatImageBase64);
-            const formData = new FormData();
-            formData.append(
-              "image",
-              imageBlob,
-              "cat-" + name.replace(/\s+/g, "-") + ".webp",
-            );
-            const uploadRes = await fetch(window.CLOUDFLARE_WORKER_URL, {
-              method: "POST",
-              body: formData,
-            });
-            if (!uploadRes.ok) throw new Error(await uploadRes.text());
-            const uploadData = await uploadRes.json();
-            finalImageUrl =
-              window.CLOUDFLARE_PUBLIC_URL + "/" + uploadData.fileName;
-            if (editTargetCategory && oldImageUrl) {
-              await deleteImageFromCloudflare(oldImageUrl);
-            }
-          } else if (editTargetCategory) {
-            finalImageUrl = oldImageUrl;
-          }
-
-          let currentSectionId = editTargetCategory
-            ? editTargetCategory.id
-            : "category-" + (categoryCount + 1);
-          const catRef = window.collection(
-            window.db,
-            "restaurants",
-            window.currentUserEmail,
-            "categories",
-          );
 
           if (editTargetCategory) {
-            const qCat = window.query(
-              catRef,
-              window.where("sectionId", "==", currentSectionId),
-            );
-            const catSnap = await window.getDocs(qCat);
-            catSnap.forEach(async (document) => {
-              await window.updateDoc(document.ref, {
-                name: name,
-                imageUrl: finalImageUrl,
-                shape: shape,
-                border: border,
-              });
-            });
-          } else {
-            await window.addDoc(catRef, {
-              name: name,
-              imageUrl: finalImageUrl,
-              shape: shape,
-              border: border,
-              sectionId: currentSectionId,
-              createdAt: new Date(),
-            });
+            finalImageUrl = document
+              .querySelector(`.a-nav[href="#${editTargetCategory.id}"]`)
+              .querySelector("img").src;
           }
 
-          document.getElementById("emptyMessage").style.display = "none";
-          document.getElementById("randomBtnContainer").style.display = "block";
+          if (currentCatImageBase64) {
+            finalImageUrl = await uploadImageToR2(
+              currentCatImageBase64,
+              "cat-" + name,
+            );
+          }
+
           const shapeClass =
             shape === "circle" ? "cat-shape-circle" : "cat-shape-original";
           const borderClass =
@@ -1738,18 +2227,22 @@
           if (editTargetCategory) {
             editTargetCategory.querySelector(".section-title em").textContent =
               name;
+
             const navLink = document.querySelector(
               `.a-nav[href="#${editTargetCategory.id}"]`,
             );
+
             const imgElem = navLink.querySelector("img");
             imgElem.src = finalImageUrl;
             imgElem.className = imgClasses;
+
             navLink.querySelector("h2").innerHTML =
               `<span style="font-size: 21px; margin-bottom: 5px; display:block;">${name}</span>${imgElem.outerHTML}`;
           } else {
             categoryCount++;
-            const sectionId = currentSectionId;
+            const sectionId = "category-" + categoryCount;
             const mainNav = document.getElementById("mainNav");
+
             const newNavBtn = document.createElement("a");
             newNavBtn.className = "a-nav";
             newNavBtn.href = "#" + sectionId;
@@ -1781,19 +2274,25 @@
                 </div>
             `;
             appContainer.appendChild(sectionWrapper);
+
+            document.getElementById("emptyMessage").style.display = "none";
+            document.getElementById("randomBtnContainer").style.display =
+              "block";
           }
+
+          checkDraftState();
           closeCategoryModal();
           updateNavGlow();
           updateImageCounter();
         } catch (error) {
-          alert("حدث خطأ أثناء الرفع: " + error.message);
+          customAlert("حدث خطأ أثناء المعالجة: " + error.message);
         } finally {
           saveBtn.textContent = originalBtnText;
           saveBtn.disabled = false;
         }
       }
 
-      async function moveCategory(catId, direction) {
+      function moveCategory(catId, direction) {
         if (isMoving) return;
         isMoving = true;
 
@@ -1820,7 +2319,6 @@
         }
 
         if (section2 && navLink2) {
-          // 1. التبديل في الواجهة (الشاشة)
           if (direction === -1) {
             appContainer.insertBefore(section1, section2);
             mainNav.insertBefore(navLink1, navLink2);
@@ -1828,41 +2326,7 @@
             appContainer.insertBefore(section2, section1);
             mainNav.insertBefore(navLink2, navLink1);
           }
-
-          // 2. التبديل في قاعدة البيانات بفايربيس
-          try {
-            const catRef = window.collection(
-              window.db,
-              "restaurants",
-              window.currentUserEmail,
-              "categories",
-            );
-
-            const q1 = window.query(
-              catRef,
-              window.where("sectionId", "==", section1.id),
-            );
-            const q2 = window.query(
-              catRef,
-              window.where("sectionId", "==", section2.id),
-            );
-
-            const snap1 = await window.getDocs(q1);
-            const snap2 = await window.getDocs(q2);
-
-            if (!snap1.empty && !snap2.empty) {
-              const doc1 = snap1.docs[0];
-              const doc2 = snap2.docs[0];
-
-              const order1 = doc1.data().createdAt;
-              const order2 = doc2.data().createdAt;
-
-              await window.updateDoc(doc1.ref, { createdAt: order2 });
-              await window.updateDoc(doc2.ref, { createdAt: order1 });
-            }
-          } catch (error) {
-            console.error("خطأ في حفظ ترتيب الأقسام:", error);
-          }
+          checkDraftState();
         }
 
         section1.classList.add("highlight-glow");
@@ -1882,29 +2346,37 @@
           oldDishNameForEdit = editTargetDish
             .querySelector(".meal-title")
             .textContent.trim();
+
           document.getElementById("dishNameInput").value = oldDishNameForEdit;
+
           document.getElementById("dishPriceInput").value = parseFloat(
             editTargetDish.querySelector(".meal-price span").textContent,
           );
+
           const detailsElem = editTargetDish.querySelector(".meal-details");
           document.getElementById("dishDetailsInput").value = detailsElem
             ? detailsElem.textContent
             : "";
+
           document.getElementById("dishFileName").textContent =
             "اختر صورة جديدة";
+
           preview.src = editTargetDish.querySelector("img").src;
           preview.style.display = "block";
+
           currentDishImageBase64 = "";
         } else {
           document.getElementById("dishModalTitle").textContent =
             "إضافة طبق جديد";
           oldDishNameForEdit = "";
+
           document.getElementById("dishNameInput").value = "";
           document.getElementById("dishPriceInput").value = "";
           document.getElementById("dishDetailsInput").value = "";
           document.getElementById("dishImageInput").value = "";
           document.getElementById("dishFileName").textContent =
             "لم يتم اختيار أي ملف";
+
           preview.src = "";
           preview.style.display = "none";
           currentDishImageBase64 = "";
@@ -1924,116 +2396,71 @@
         const details = document.getElementById("dishDetailsInput").value;
 
         if (!name || !price || isNaN(price)) {
-          alert("يرجى تعبئة الاسم والسعر");
+          customAlert("يرجى تعبئة الاسم والسعر");
           return;
         }
+
         if (!editTargetDish && !currentDishImageBase64) {
-          alert("يرجى اختيار صورة للطبق الجديد");
+          customAlert("يرجى اختيار صورة للطبق الجديد");
           return;
         }
+
         if (!editTargetDish && updateImageCounter() >= MAX_TOTAL_IMAGES) {
-          alert("عذراً، لقد وصلت للحد الأقصى");
+          customAlert("عذراً، لقد وصلت للحد الأقصى");
           return;
         }
 
         const existingDishes = Array.from(
           document.querySelectorAll(".meal-title"),
         ).map((t) => t.textContent.trim());
+
         if (!editTargetDish && existingDishes.includes(name)) {
-          alert("هذا الطبق موجود مسبقاً!");
+          customAlert("هذا الطبق موجود مسبقاً!");
           return;
         }
+
         if (
           editTargetDish &&
           name !== oldDishNameForEdit &&
           existingDishes.includes(name)
         ) {
-          alert("يوجد طبق آخر بنفس الاسم الجديد!");
+          customAlert("يوجد طبق آخر بنفس الاسم الجديد!");
           return;
         }
 
         const saveBtn = document.querySelector("#dishModal .btn-save");
         const originalBtnText = saveBtn.textContent;
-        saveBtn.textContent = "جاري الحفظ..";
+        saveBtn.textContent = "جاري المعالجة..";
         saveBtn.disabled = true;
 
         try {
           let finalImageUrl = "";
-          let oldImageUrl = editTargetDish
-            ? editTargetDish.querySelector("img").src
-            : "";
-
-          if (currentDishImageBase64) {
-            const imageBlob = dataURLtoBlob(currentDishImageBase64);
-            const formData = new FormData();
-            formData.append(
-              "image",
-              imageBlob,
-              name.replace(/\s+/g, "-") + ".webp",
-            );
-            const uploadRes = await fetch(window.CLOUDFLARE_WORKER_URL, {
-              method: "POST",
-              body: formData,
-            });
-            if (!uploadRes.ok) throw new Error(await uploadRes.text());
-            const uploadData = await uploadRes.json();
-            finalImageUrl =
-              window.CLOUDFLARE_PUBLIC_URL + "/" + uploadData.fileName;
-            if (editTargetDish && oldImageUrl) {
-              await deleteImageFromCloudflare(oldImageUrl);
-            }
-          } else if (editTargetDish) {
-            finalImageUrl = oldImageUrl;
-          }
-
-          const menuRef = window.collection(
-            window.db,
-            "restaurants",
-            window.currentUserEmail,
-            "menuItems",
-          );
 
           if (editTargetDish) {
-            const qDish = window.query(
-              menuRef,
-              window.where("name", "==", oldDishNameForEdit),
-            );
-            const dishSnap = await window.getDocs(qDish);
-            dishSnap.forEach(async (document) => {
-              await window.updateDoc(document.ref, {
-                name: name,
-                price: price,
-                details: details,
-                imageUrl: finalImageUrl,
-              });
-            });
-            // 🌟 تحديث ومزامنة السحب العشوائي إذا غيرنا الاسم
-            if (
-              oldDishNameForEdit !== name &&
-              window.randomMealPool.includes(oldDishNameForEdit)
-            ) {
-              window.randomMealPool[
-                window.randomMealPool.indexOf(oldDishNameForEdit)
-              ] = name;
-              renderRandomPoolList();
-              syncRandomPoolToFirebase();
-            }
-          } else {
-            await window.addDoc(menuRef, {
-              name: name,
-              price: price,
-              details: details,
-              imageUrl: finalImageUrl,
-              gridId: currentActiveGridId,
-              createdAt: new Date(),
-              isAvailable: true,
-            });
+            finalImageUrl = editTargetDish.querySelector("img").src;
+          }
+
+          if (currentDishImageBase64) {
+            finalImageUrl = await uploadImageToR2(currentDishImageBase64, name);
+          }
+
+          if (
+            editTargetDish &&
+            oldDishNameForEdit !== name &&
+            window.randomMealPool.includes(oldDishNameForEdit)
+          ) {
+            window.randomMealPool[
+              window.randomMealPool.indexOf(oldDishNameForEdit)
+            ] = name;
+            renderRandomPoolList();
           }
 
           const isAvail = editTargetDish
             ? !editTargetDish.classList.contains("unavailable")
             : true;
+
           const availClass = isAvail ? "" : "unavailable";
+
           const overlayHTML = isAvail
             ? ""
             : `<div class="out-of-stock-overlay"><span class="out-of-stock-text">غير متوفر</span></div>`;
@@ -2068,22 +2495,25 @@
             const dishCard = document.createElement("div");
             dishCard.className = `meal-card ${availClass}`;
             dishCard.innerHTML = innerHTMLContent;
+
             const gridContainer = document.getElementById(currentActiveGridId);
             const addDishBtn = gridContainer.querySelector(".add-dish-card");
             gridContainer.insertBefore(dishCard, addDishBtn);
           }
+
+          checkDraftState();
           closeDishModal();
           refreshArrows();
           updateImageCounter();
         } catch (error) {
-          alert("حدث خطأ أثناء الرفع: " + error.message);
+          customAlert("حدث خطأ أثناء المعالجة: " + error.message);
         } finally {
           saveBtn.textContent = originalBtnText;
           saveBtn.disabled = false;
         }
       }
 
-      async function moveDish(btnElem, direction) {
+      function moveDish(btnElem, direction) {
         if (isMoving) return;
         isMoving = true;
 
@@ -2091,7 +2521,6 @@
         const grid = card1.parentElement;
         let card2 = null;
 
-        // تحديد الطبق الثاني اللي بنبدل معاه
         if (direction === -1) {
           card2 = card1.previousElementSibling;
         } else {
@@ -2100,49 +2529,17 @@
         }
 
         if (card2) {
-          // 1. التبديل بالشاشة (الواجهة)
           if (direction === -1) {
             grid.insertBefore(card1, card2);
           } else {
             grid.insertBefore(card2, card1);
           }
-
-          // 2. التبديل في قاعدة البيانات
-          const name1 = card1.querySelector(".meal-title").textContent;
-          const name2 = card2.querySelector(".meal-title").textContent;
-
-          try {
-            const menuRef = window.collection(
-              window.db,
-              "restaurants",
-              window.currentUserEmail,
-              "menuItems",
-            );
-
-            const q1 = window.query(menuRef, window.where("name", "==", name1));
-            const q2 = window.query(menuRef, window.where("name", "==", name2));
-
-            const snap1 = await window.getDocs(q1);
-            const snap2 = await window.getDocs(q2);
-
-            if (!snap1.empty && !snap2.empty) {
-              const doc1 = snap1.docs[0];
-              const doc2 = snap2.docs[0];
-
-              // نأخذ وقت الإنشاء لكل طبق ونبدلهم مع بعض
-              const order1 = doc1.data().createdAt;
-              const order2 = doc2.data().createdAt;
-
-              await window.updateDoc(doc1.ref, { createdAt: order2 });
-              await window.updateDoc(doc2.ref, { createdAt: order1 });
-            }
-          } catch (error) {
-            console.error("خطأ في حفظ ترتيب الأطباق:", error);
-          }
+          checkDraftState();
         }
 
         card1.classList.add("highlight-glow");
         refreshArrows();
+
         setTimeout(() => {
           card1.classList.remove("highlight-glow");
           isMoving = false;
@@ -2163,26 +2560,31 @@
         const inputVal = document
           .getElementById("randomDishInput")
           .value.trim();
+
         if (!inputVal) {
-          alert("يرجى كتابة اسم الطبق.");
+          customAlert("يرجى كتابة اسم الطبق.");
           return;
         }
+
         const existingDishes = Array.from(
           document.querySelectorAll(".meal-title"),
         ).map((t) => t.textContent.trim());
+
         if (!existingDishes.includes(inputVal)) {
-          alert("هذا الطبق غير موجود في المنيو!");
+          customAlert("هذا الطبق غير موجود في المنيو!");
           return;
         }
+
         if (window.randomMealPool.includes(inputVal)) {
-          alert("هذا الطبق موجود مسبقاً.");
+          customAlert("هذا الطبق موجود مسبقاً.");
           return;
         }
 
         window.randomMealPool.push(inputVal);
         document.getElementById("randomDishInput").value = "";
+
         renderRandomPoolList();
-        syncRandomPoolToFirebase(); // 🌟 مزامنة مع السيرفر
+        checkDraftState();
       }
 
       function removeDishFromRandomPool(dishName) {
@@ -2190,16 +2592,18 @@
           (name) => name !== dishName,
         );
         renderRandomPoolList();
-        syncRandomPoolToFirebase(); // 🌟 مزامنة مع السيرفر
+        checkDraftState();
       }
 
       function renderRandomPoolList() {
         const listContainer = document.getElementById("randomPoolList");
+
         if (window.randomMealPool.length === 0) {
           listContainer.innerHTML =
             '<div style="color:#aaa; text-align:center;">القائمة فارغة حالياً</div>';
           return;
         }
+
         listContainer.innerHTML = window.randomMealPool
           .map(
             (name) => `
@@ -2214,6 +2618,7 @@
 
       function openDeleteCategory(catId, name) {
         itemToDelete = { type: "category", id: catId };
+
         document.getElementById("deleteModalMsg").textContent =
           `هل أنت متأكد من حذف قسم (${name}) بجميع أطباقه؟`;
 
@@ -2232,6 +2637,7 @@
           name: name,
           isUnavailable: isUnavailable,
         };
+
         document.getElementById("deleteModalMsg").textContent =
           `هل أنت متأكد من حذف طبق (${name})؟`;
 
@@ -2258,176 +2664,81 @@
         itemToDelete = null;
       }
 
-      async function confirmTempDelete() {
-        const tempBtn = document.getElementById("tempDeleteBtn");
-        const originalText = tempBtn.textContent;
-        tempBtn.textContent = "جاري التحديث..";
-        tempBtn.disabled = true;
+      function confirmTempDelete() {
+        const card = itemToDelete.element;
+        const makeAvailable = itemToDelete.isUnavailable;
 
-        try {
-          const card = itemToDelete.element;
-          const dishName = itemToDelete.name;
-          const makeAvailable = itemToDelete.isUnavailable; // اذا كان مخفي، راح يصير متاح
-
-          const menuRef = window.collection(
-            window.db,
-            "restaurants",
-            window.currentUserEmail,
-            "menuItems",
-          );
-          const q = window.query(menuRef, window.where("name", "==", dishName));
-          const querySnapshot = await window.getDocs(q);
-
-          querySnapshot.forEach(async (document) => {
-            await window.updateDoc(document.ref, {
-              isAvailable: makeAvailable,
-            });
-          });
-
-          if (makeAvailable) {
-            card.classList.remove("unavailable");
-            const overlay = card.querySelector(".out-of-stock-overlay");
-            if (overlay) overlay.remove();
-          } else {
-            card.classList.add("unavailable");
-            const imgWrapper = card.querySelector(".image-wrapper");
-            if (
-              imgWrapper &&
-              !imgWrapper.querySelector(".out-of-stock-overlay")
-            ) {
-              imgWrapper.insertAdjacentHTML(
-                "afterbegin",
-                `<div class="out-of-stock-overlay"><span class="out-of-stock-text">غير متوفر</span></div>`,
-              );
-            }
+        if (makeAvailable) {
+          card.classList.remove("unavailable");
+          const overlay = card.querySelector(".out-of-stock-overlay");
+          if (overlay) overlay.remove();
+        } else {
+          card.classList.add("unavailable");
+          const imgWrapper = card.querySelector(".image-wrapper");
+          if (
+            imgWrapper &&
+            !imgWrapper.querySelector(".out-of-stock-overlay")
+          ) {
+            imgWrapper.insertAdjacentHTML(
+              "afterbegin",
+              `<div class="out-of-stock-overlay"><span class="out-of-stock-text">غير متوفر</span></div>`,
+            );
           }
-          closeDeleteModal();
-        } catch (error) {
-          alert("حدث خطأ: " + error.message);
-        } finally {
-          tempBtn.textContent = originalText;
-          tempBtn.disabled = false;
         }
+
+        checkDraftState();
+        closeDeleteModal();
       }
 
-      async function confirmDelete() {
-        const deleteBtn = document.querySelector("#deleteModal .btn-danger");
-        const originalText = deleteBtn.textContent;
-        deleteBtn.textContent = "جاري الحذف..";
-        deleteBtn.disabled = true;
+      function confirmDelete() {
+        if (itemToDelete.type === "category") {
+          const categoryNode = document.getElementById(itemToDelete.id);
+          const navLink = document.querySelector(
+            `.a-nav[href="#${itemToDelete.id}"]`,
+          );
 
-        try {
-          if (itemToDelete.type === "category") {
-            const categoryNode = document.getElementById(itemToDelete.id);
-            const navLink = document.querySelector(
-              `.a-nav[href="#${itemToDelete.id}"]`,
-            );
-            const imgUrl = navLink.querySelector("img").src;
+          const dishTitles = Array.from(
+            categoryNode.querySelectorAll(".meal-title"),
+          ).map((t) => t.textContent.trim());
 
-            await deleteImageFromCloudflare(imgUrl);
+          window.randomMealPool = window.randomMealPool.filter(
+            (name) => !dishTitles.includes(name),
+          );
 
-            const catRef = window.collection(
-              window.db,
-              "restaurants",
-              window.currentUserEmail,
-              "categories",
-            );
-            const qCat = window.query(
-              catRef,
-              window.where("sectionId", "==", itemToDelete.id),
-            );
-            const catSnap = await window.getDocs(qCat);
-            catSnap.forEach(async (document) => {
-              await window.deleteDoc(document.ref);
-            });
+          categoryNode.remove();
+          if (navLink) navLink.remove();
 
-            const dishTitles = Array.from(
-              categoryNode.querySelectorAll(".meal-title"),
-            ).map((t) => t.textContent.trim());
-            const dishImgs = Array.from(
-              categoryNode.querySelectorAll(".meal-card img"),
-            ).map((img) => img.src);
-
-            for (let src of dishImgs) {
-              await deleteImageFromCloudflare(src);
-            }
-
-            const menuRef = window.collection(
-              window.db,
-              "restaurants",
-              window.currentUserEmail,
-              "menuItems",
-            );
-            const qDishes = window.query(
-              menuRef,
-              window.where("gridId", "==", `grid-${itemToDelete.id}`),
-            );
-            const dishSnap = await window.getDocs(qDishes);
-            dishSnap.forEach(async (document) => {
-              await window.deleteDoc(document.ref);
-            });
-
-            // 🌟 مزامنة الحذف مع السحب العشوائي
-            window.randomMealPool = window.randomMealPool.filter(
-              (name) => !dishTitles.includes(name),
-            );
-            syncRandomPoolToFirebase();
-
-            categoryNode.remove();
-            if (navLink) navLink.remove();
-            if (document.querySelectorAll(".category-section").length === 0) {
-              document.getElementById("emptyMessage").style.display = "block";
-              document.getElementById("randomBtnContainer").style.display =
-                "none";
-            }
-            updateNavGlow();
-          } else if (itemToDelete.type === "dish") {
-            const card = itemToDelete.element;
-            const imgUrl = card.querySelector("img").src;
-            const dishName = itemToDelete.name;
-
-            await deleteImageFromCloudflare(imgUrl);
-
-            const menuRef = window.collection(
-              window.db,
-              "restaurants",
-              window.currentUserEmail,
-              "menuItems",
-            );
-            const q = window.query(
-              menuRef,
-              window.where("name", "==", dishName),
-            );
-            const querySnapshot = await window.getDocs(q);
-            querySnapshot.forEach(async (document) => {
-              await window.deleteDoc(document.ref);
-            });
-
-            // 🌟 مزامنة الحذف مع السحب العشوائي
-            window.randomMealPool = window.randomMealPool.filter(
-              (name) => name !== itemToDelete.name,
-            );
-            syncRandomPoolToFirebase();
-
-            card.remove();
-            refreshArrows();
+          if (document.querySelectorAll(".category-section").length === 0) {
+            document.getElementById("emptyMessage").style.display = "block";
+            document.getElementById("randomBtnContainer").style.display =
+              "none";
           }
-          closeDeleteModal();
-          updateImageCounter();
-        } catch (error) {
-          alert("حدث خطأ أثناء الحذف: " + error.message);
-        } finally {
-          deleteBtn.textContent = originalText;
-          deleteBtn.disabled = false;
+
+          updateNavGlow();
+        } else if (itemToDelete.type === "dish") {
+          const card = itemToDelete.element;
+
+          window.randomMealPool = window.randomMealPool.filter(
+            (name) => name !== itemToDelete.name,
+          );
+
+          card.remove();
+          refreshArrows();
         }
+
+        checkDraftState();
+        closeDeleteModal();
+        updateImageCounter();
       }
 
       function refreshArrows() {
         document.querySelectorAll(".menu-grid").forEach((grid) => {
           const cards = Array.from(grid.querySelectorAll(".meal-card"));
+
           cards.forEach((card, index) => {
             const btnRight = card.querySelector(".btn-right-arrow");
             const btnLeft = card.querySelector(".btn-left-arrow");
+
             if (!btnRight || !btnLeft) return;
 
             btnRight.style.visibility = "visible";
@@ -2464,15 +2775,19 @@
           navWrapper.classList.remove("show-right-glow", "show-left-glow");
           return;
         }
+
         const navRect = nav.getBoundingClientRect();
         const firstItem = nav.firstElementChild;
         const lastItem = nav.lastElementChild;
+
         const canScrollRight =
           firstItem.getBoundingClientRect().right > navRect.right + 5;
         const canScrollLeft =
           lastItem.getBoundingClientRect().left < navRect.left - 5;
+
         if (canScrollRight) navWrapper.classList.add("show-right-glow");
         else navWrapper.classList.remove("show-right-glow");
+
         if (canScrollLeft) navWrapper.classList.add("show-left-glow");
         else navWrapper.classList.remove("show-left-glow");
       }
@@ -2482,15 +2797,14 @@
         updateNavGlow();
         refreshArrows();
       });
+
       updateNavGlow();
       updateImageCounter();
 
-      // نظام تتبع الأقسام المقتبس
       function activateSection() {
         let currentId = "";
         const sections = document.querySelectorAll(".category-section");
 
-        // حساب مكان القسم بالشاشة
         sections.forEach((section) => {
           const sectionTop = section.offsetTop - 200;
           if (window.scrollY >= sectionTop) {
@@ -2498,7 +2812,6 @@
           }
         });
 
-        // تشغيل الخط تحت القسم المناسب وإطفائه عن الباقي
         const navLinks = document.querySelectorAll(".a-nav");
         navLinks.forEach((link) => {
           link.classList.remove("active");
@@ -2507,7 +2820,6 @@
           }
         });
 
-        // تحريك الشريط العلوي ليضع القسم النشط في المنتصف
         const activeLink = document.querySelector(".a-nav.active");
         if (activeLink) {
           activeLink.scrollIntoView({
@@ -2518,23 +2830,30 @@
         }
       }
 
-      // تشغيل النظام مع كل تمرير للشاشة
       window.addEventListener("scroll", activateSection);
 
-      
-      async function handleLogout() {
-        // رسالة التحذير قبل الخروج
-        const confirmOut = confirm("هل أنت متأكد أنك تريد تسجيل الخروج؟");
-
-        if (confirmOut) {
-          try {
+      function handleLogout() {
+        if (window.isDraftMode) {
+          customConfirm(
+            "لديك تعديلات لم تقم بنشرها! هل أنت متأكد من الخروج؟ (سيتم فقدان التعديلات غير المنشورة)",
+            async () => {
+              await window.signOut(window.auth);
+            },
+          );
+        } else {
+          customConfirm("هل أنت متأكد أنك تريد تسجيل الخروج؟", async () => {
             await window.signOut(window.auth);
-
-          } catch (error) {
-            alert("حدث خطأ أثناء تسجيل الخروج: " + error.message);
-          }
+          });
         }
       }
+
+      // تنبيه المستخدم إذا حاول تحديث أو إغلاق الصفحة وعنده تعديلات غير منشورة
+      window.addEventListener("beforeunload", function (e) {
+        if (window.isDraftMode) {
+          e.preventDefault();
+          e.returnValue = ""; // هذي اللي تجبر المتصفح يطلّع رسالة التحذير
+        }
+      });
     </script>
   </body>
 </html>
