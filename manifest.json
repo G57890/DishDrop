@@ -10,7 +10,7 @@
   "orientation": "portrait",
   "icons": [
     {
-      "src": "/images/dish-drop-192.png",
+      "src": "/images/dish-drop-ios-192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
