@@ -29,7 +29,6 @@
       body {
         background-color: #f5f5f5;
         color: #303841;
-        /* تم حذف direction: rtl من هنا ليتحكم بها الـ HTML tag */
         padding: 10px;
         max-width: 1200px;
         margin: 0 auto;
@@ -77,12 +76,7 @@
         transition: all 0.3s ease;
       }
 
-      .sam_con-a:active {
-        border-bottom: 0px solid black;
-        transform: translateY(2px);
-      }
-
-      .a-lang:active {
+      .sam_con-a:active, .a-lang:active {
         border-bottom: 0px solid black;
         transform: translateY(2px);
       }
@@ -131,7 +125,6 @@
       .modern-list {
         list-style: none;
       }
-      /* استخدام الخصائص المنطقية لتتكيف مع اللغتين تلقائياً */
       .modern-list li {
         margin-bottom: 18px;
         line-height: 1.8;
@@ -186,7 +179,6 @@
       .dishdrop-text ul {
         list-style: none;
       }
-      /* ضبط المسافات للقائمة داخل قسم DishDrop */
       .dishdrop-text ul li {
         margin-bottom: 15px;
         line-height: 1.8;
@@ -217,6 +209,19 @@
         box-shadow: 0 5px 15px rgba(212, 175, 55, 0.2);
       }
 
+      .media-container {
+        width: 100%;
+        height: 100%;
+        position: relative;
+      }
+
+      #fallbackImg {
+        display: none; 
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
       .dishdrop-video {
         width: 100%;
         height: 100%;
@@ -226,13 +231,8 @@
 
       /* --- زر الباقات --- */
       @keyframes floatEffect {
-        0%,
-        100% {
-          transform: translateY(0);
-        }
-        50% {
-          transform: translateY(-8px);
-        }
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-8px); }
       }
       .btn-packages {
         display: inline-block;
@@ -266,14 +266,8 @@
       }
 
       @keyframes floatIn {
-        from {
-          opacity: 0;
-          transform: translateY(20px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
       }
       .float-in {
         opacity: 0;
@@ -385,9 +379,27 @@
       </div>
 
       <div class="video-wrapper-outer">
-        <video autoplay loop muted playsinline webkit-playsinline preload="auto" poster="images/dish-drop-screenshot.jpg" class="dishdrop-video">
-          <source src="images/dish-drop.mp4" type="video/mp4" />
-        </video>
+        <div class="media-container">
+          <img
+            id="fallbackImg"
+            src="images/dish-drop-screenshot.jpg"
+            alt="DishDrop Cover"
+          />
+          <!-- تم إضافة id="heroVideo" هنا ليتعرف عليه الجافاسكربت -->
+          <video
+            id="heroVideo"
+            autoplay
+            loop
+            muted
+            playsinline
+            webkit-playsinline
+            preload="auto"
+            poster="images/dish-drop-screenshot.jpg"
+            class="dishdrop-video"
+          >
+            <source src="images/dish-drop.mp4" type="video/mp4" />
+          </video>
+        </div>
       </div>
     </div>
 
@@ -407,6 +419,7 @@
     />
     <div class="solver-2">
       <img src="images/y-logo.png" alt="Y symbol" style="width: 70px" />
+
       <div class="the-word">
         <h2>"A menu that delights,<br />keeping customers in sight"</h2>
       </div>
@@ -484,9 +497,7 @@
           },
         };
 
-        // دالة الترجمة (جمعنا الكود فيها عشان يصير أرتب ونستدعيها متى ما نبي)
         const applyLanguage = (lang) => {
-          // ضيف هذا السطر داخل الـ applyLanguage
           localStorage.setItem("dishdrop_lang", lang);
           const t = translations[lang];
           htmlTag.lang = lang;
@@ -536,23 +547,48 @@
           if (quote) quote.innerHTML = t.quote;
         };
 
-        // قراءة الذاكرة أولاً، وإذا كانت فارغة نفحص لغة المتصفح
-        const savedLang = localStorage.getItem("dishdrop_lang"); // يجيب اللغة اللي اخترتها
+        const savedLang = localStorage.getItem("dishdrop_lang");
         const userBrowserLang = navigator.language || navigator.userLanguage;
         const browserDefault = userBrowserLang.toLowerCase().startsWith("ar")
           ? "ar"
           : "en";
 
-        // يطبق اللغة المحفوظة، وإذا أول مرة يدش يطبق لغة المتصفح
         applyLanguage(savedLang || browserDefault);
 
-        // كود زر التبديل
         if (langBtn) {
           langBtn.addEventListener("click", (e) => {
             e.preventDefault();
             const currentLang = htmlTag.lang === "en" ? "ar" : "en";
             applyLanguage(currentLang);
           });
+        }
+      });
+
+      // الكود المطور لحل مشكلة الفيديو في iOS سفاري
+      document.addEventListener("DOMContentLoaded", function () {
+        const video = document.getElementById("heroVideo");
+        const fallback = document.getElementById("fallbackImg");
+
+        if (video) {
+          // 1. محاولة التشغيل البرمجي السريعة
+          let playPromise = video.play();
+
+          if (playPromise !== undefined) {
+            playPromise.catch((error) => {
+              // إذا المتصفح عطانا بلوك صريح
+              video.style.display = "none";
+              fallback.style.display = "block";
+            });
+          }
+
+          // 2. الفحص الإجباري لعناد الآيفون بوضع توفير الطاقة
+          // نشيك بعد نص ثانية، إذا الفيديو للحين واقف معناته الآيفون مجمده
+          setTimeout(() => {
+            if (video.paused) {
+              video.style.display = "none";
+              fallback.style.display = "block";
+            }
+          }, 500); 
         }
       });
     </script>
