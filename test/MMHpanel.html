@@ -1024,46 +1024,46 @@
 
       async function loadMenuData() {
         try {
-          const catRef = window.collection(
-            window.db,
-            "restaurants",
-            window.currentUserEmail,
-            "categories",
-          );
-          const dishRef = window.collection(
-            window.db,
-            "restaurants",
-            window.currentUserEmail,
-            "menuItems",
-          );
           const restDocRef = window.doc(
             window.db,
             "restaurants",
             window.currentUserEmail,
           );
-
-          const [catSnap, dishSnap, restDocSnap] = await Promise.all([
-            window.getDocs(catRef),
-            window.getDocs(dishRef),
-            window.getDoc(restDocRef),
-          ]);
+          const restDocSnap = await window.getDoc(restDocRef);
 
           let cats = [];
-          catSnap.forEach((doc) => {
-            cats.push({ id: doc.id, ...doc.data() });
-          });
+          let dishes = [];
 
-          cats.sort((a, b) => {
-            const valA =
-              a.createdAt?.seconds !== undefined
-                ? a.createdAt.seconds
-                : a.createdAt || 0;
-            const valB =
-              b.createdAt?.seconds !== undefined
-                ? b.createdAt.seconds
-                : b.createdAt || 0;
-            return valA - valB;
-          });
+          if (restDocSnap.exists() && restDocSnap.data().categories) {
+            const data = restDocSnap.data();
+            cats = data.categories || [];
+            dishes = data.menuItems || [];
+            if (data.randomMealPool) window.randomMealPool = data.randomMealPool;
+          } else {
+            const catRef = window.collection(window.db, "restaurants", window.currentUserEmail, "categories");
+            const dishRef = window.collection(window.db, "restaurants", window.currentUserEmail, "menuItems");
+            const [catSnap, dishSnap] = await Promise.all([window.getDocs(catRef), window.getDocs(dishRef)]);
+
+            catSnap.forEach((doc) => cats.push({ id: doc.id, ...doc.data() }));
+            dishSnap.forEach((doc) => dishes.push({ id: doc.id, ...doc.data() }));
+
+            cats.sort((a, b) => {
+              const valA = a.createdAt?.seconds !== undefined ? a.createdAt.seconds : a.createdAt || 0;
+              const valB = b.createdAt?.seconds !== undefined ? b.createdAt.seconds : b.createdAt || 0;
+              return valA - valB;
+            });
+            dishes.sort((a, b) => {
+              const valA = a.createdAt?.seconds !== undefined ? a.createdAt.seconds : a.createdAt || 0;
+              const valB = b.createdAt?.seconds !== undefined ? b.createdAt.seconds : b.createdAt || 0;
+              return valA - valB;
+            });
+            
+            if (restDocSnap.exists() && restDocSnap.data().randomMealPool) {
+                window.randomMealPool = restDocSnap.data().randomMealPool;
+            }
+          }
+
+          window.originalImages = [];
 
           const mainNav = document.getElementById("mainNav");
           const appContainer = document.getElementById("appContainer");
@@ -1126,23 +1126,6 @@
 
           window.categoryCount = highestCatNum;
 
-          let dishes = [];
-          dishSnap.forEach((doc) => {
-            dishes.push({ id: doc.id, ...doc.data() });
-          });
-
-          dishes.sort((a, b) => {
-            const valA =
-              a.createdAt?.seconds !== undefined
-                ? a.createdAt.seconds
-                : a.createdAt || 0;
-            const valB =
-              b.createdAt?.seconds !== undefined
-                ? b.createdAt.seconds
-                : b.createdAt || 0;
-            return valA - valB;
-          });
-
           dishes.forEach((dish) => {
             const gridContainer = document.getElementById(dish.gridId);
             if (gridContainer) {
@@ -1188,11 +1171,8 @@
             }
           });
 
-          if (restDocSnap.exists() && restDocSnap.data().randomMealPool) {
-            window.randomMealPool = restDocSnap.data().randomMealPool;
-            if (typeof renderRandomPoolList === "function") {
-              renderRandomPoolList();
-            }
+          if (typeof renderRandomPoolList === "function") {
+            renderRandomPoolList();
           }
 
           if (typeof updateImageCounter === "function") updateImageCounter();
@@ -1772,9 +1752,9 @@
                 batch.delete(doc.ref);
               });
 
-              const baseTime = Date.now();
-              let catOrder = 1;
               const currentDOMImages = [];
+              const currentCategories = [];
+              const currentMenuItems = [];
 
               const sections = document.querySelectorAll(".category-section");
 
@@ -1803,18 +1783,14 @@
                   ? "gold"
                   : "none";
 
-                const newCatRef = window.doc(catRef);
-                batch.set(newCatRef, {
+                currentCategories.push({
                   name: catName,
                   imageUrl: imageUrl,
                   shape: shape,
                   border: border,
-                  sectionId: sectionId,
-                  createdAt: new Date(baseTime + catOrder * 1000),
+                  sectionId: sectionId
                 });
-                catOrder++;
 
-                let dishOrder = 1;
                 const mealCards = section.querySelectorAll(".meal-card");
 
                 mealCards.forEach((card) => {
@@ -1837,24 +1813,25 @@
                     : "";
                   const isAvailable = !card.classList.contains("unavailable");
 
-                  const newDishRef = window.doc(dishRef);
-                  batch.set(newDishRef, {
+                  currentMenuItems.push({
                     name: dishName,
                     price: priceText,
                     details: details,
                     imageUrl: dishImgUrl,
                     gridId: `grid-${sectionId}`,
-                    isAvailable: isAvailable,
-                    createdAt: new Date(baseTime + dishOrder * 1000),
+                    isAvailable: isAvailable
                   });
-                  dishOrder++;
                 });
               });
 
               const restDocRef = window.doc(window.db, "restaurants", email);
               batch.set(
                 restDocRef,
-                { randomMealPool: window.randomMealPool },
+                { 
+                  categories: currentCategories,
+                  menuItems: currentMenuItems,
+                  randomMealPool: window.randomMealPool 
+                },
                 { merge: true },
               );
 
