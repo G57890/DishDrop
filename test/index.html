@@ -502,36 +502,42 @@
 
       async function loadCustomerMenu() {
         try {
-          // 1️⃣ تجهيز مسارات البيانات
-          const catRef = collection(
-            db,
-            "restaurants",
-            RESTAURANT_OWNER_EMAIL,
-            "categories",
-          );
-          const dishRef = collection(
-            db,
-            "restaurants",
-            RESTAURANT_OWNER_EMAIL,
-            "menuItems",
-          );
           const restDocRef = doc(db, "restaurants", RESTAURANT_OWNER_EMAIL);
+          const restDocSnap = await getDoc(restDocRef);
 
-          // 2️⃣ السحر هنا: نرسل الـ 3 طلبات لفايربيس بنفس اللحظة! (يسرع التحميل جداً)
-          const [catSnap, dishSnap, restDocSnap] = await Promise.all([
-            getDocs(catRef),
-            getDocs(dishRef),
-            getDoc(restDocRef),
-          ]);
-
-          // --- معالجة الأقسام ---
           let cats = [];
-          catSnap.forEach((doc) => {
-            cats.push({ id: doc.id, ...doc.data() });
-          });
-          cats.sort(
-            (a, b) => (a.createdAt?.seconds || 0) - (b.createdAt?.seconds || 0),
-          );
+          let dishes = [];
+
+          if (restDocSnap.exists() && restDocSnap.data().categories) {
+            // الهيكلة الجديدة
+            const data = restDocSnap.data();
+            cats = data.categories || [];
+            dishes = data.menuItems || [];
+            if (data.randomMealPool) window.customerRandomPool = data.randomMealPool;
+          } else {
+            // الرجوع للخلف إذا ما تم النشر بالنسخة الجديدة
+            const catRef = collection(db, "restaurants", RESTAURANT_OWNER_EMAIL, "categories");
+            const dishRef = collection(db, "restaurants", RESTAURANT_OWNER_EMAIL, "menuItems");
+            const [catSnap, dishSnap] = await Promise.all([getDocs(catRef), getDocs(dishRef)]);
+
+            catSnap.forEach((doc) => cats.push({ id: doc.id, ...doc.data() }));
+            dishSnap.forEach((doc) => dishes.push({ id: doc.id, ...doc.data() }));
+
+            cats.sort((a, b) => {
+              const valA = a.createdAt?.seconds !== undefined ? a.createdAt.seconds : a.createdAt || 0;
+              const valB = b.createdAt?.seconds !== undefined ? b.createdAt.seconds : b.createdAt || 0;
+              return valA - valB;
+            });
+            dishes.sort((a, b) => {
+              const valA = a.createdAt?.seconds !== undefined ? a.createdAt.seconds : a.createdAt || 0;
+              const valB = b.createdAt?.seconds !== undefined ? b.createdAt.seconds : b.createdAt || 0;
+              return valA - valB;
+            });
+            
+            if (restDocSnap.exists() && restDocSnap.data().randomMealPool) {
+                window.customerRandomPool = restDocSnap.data().randomMealPool;
+            }
+          }
 
           const mainNav = document.getElementById("mainNav");
           const appContainer = document.getElementById("appContainer");
@@ -564,15 +570,6 @@
             appContainer.appendChild(sectionWrapper);
           });
 
-          // --- معالجة الأطباق ---
-          let dishes = [];
-          dishSnap.forEach((doc) => {
-            dishes.push({ id: doc.id, ...doc.data() });
-          });
-          dishes.sort(
-            (a, b) => (a.createdAt?.seconds || 0) - (b.createdAt?.seconds || 0),
-          );
-
           dishes.forEach((dish) => {
             const gridContainer = document.getElementById(dish.gridId);
             if (gridContainer) {
@@ -592,7 +589,7 @@
               dishCard.innerHTML = `
                 <div class="image-wrapper">
                     ${overlayHTML}
-                    <img src="${dish.imageUrl}" alt="${dish.name}">
+                    <img src="${dish.imageUrl}" alt="${dish.name}" loading="lazy">
                 </div>
                 <h3 class="meal-title">${dish.name}</h3>
                 ${detailsHTML}
@@ -601,11 +598,6 @@
               gridContainer.appendChild(dishCard);
             }
           });
-
-          // --- معالجة الوجبة العشوائية ---
-          if (restDocSnap.exists() && restDocSnap.data().randomMealPool) {
-            window.customerRandomPool = restDocSnap.data().randomMealPool;
-          }
 
           // إخفاء التحميل وعرض المنيو
           document.getElementById("loader-screen").style.display = "none";
