@@ -17,7 +17,6 @@
         --modal-bg: #4a545e;
       }
 
-      /* شاشة التحميل */
       #loader-screen {
         position: fixed;
         top: 0;
@@ -69,7 +68,6 @@
         scroll-behavior: smooth;
       }
 
-      /* الشريط العلوي (الأقسام) */
       .nav-wrapper {
         position: fixed;
         top: 0;
@@ -97,19 +95,11 @@
 
       .nav-wrapper::before {
         right: 0;
-        background: linear-gradient(
-          to left,
-          rgba(202, 172, 94, 0.8),
-          transparent
-        );
+        background: linear-gradient(to left, rgba(202, 172, 94, 0.8), transparent);
       }
       .nav-wrapper::after {
         left: 0;
-        background: linear-gradient(
-          to right,
-          rgba(202, 172, 94, 0.8),
-          transparent
-        );
+        background: linear-gradient(to right, rgba(202, 172, 94, 0.8), transparent);
       }
       .nav-wrapper.show-right-glow::before {
         opacity: 1;
@@ -132,7 +122,6 @@
         display: none;
       }
 
-      /* هذي السطرين هم اللي راح يخلون الأقسام بالنص إذا كانوا شوية، وما يقصهم إذا كثروا */
       .a-nav:first-of-type {
         margin-right: auto;
       }
@@ -192,22 +181,19 @@
         width: 100%;
       }
 
-      /* الشعار */
       .header-logo {
         text-align: center;
         margin: 20px 0 40px;
       }
       .header-logo img {
         width: 200px;
+        height: auto;
       }
 
-      /* الأقسام والأطباق */
       .category-section {
         margin-bottom: 40px;
-        scroll-margin-top: 160px; /* هذا يبعد القسم عن الشريط العلوي */
-        transition:
-          transform 0.3s ease,
-          box-shadow 0.3s ease;
+        scroll-margin-top: 160px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
         border-radius: 20px;
       }
 
@@ -222,23 +208,23 @@
         font-size: 38px;
         color: var(--text-light);
         margin-bottom: 10px;
-        text-align: center; /* يخلي كل شيء بالنص */
-        padding: 0 20px; /* يمنع الكلام من إنه يلزق بأطراف الشاشة */
-        line-height: 1.4; /* يخلي المسافة بين السطر الأول والثاني مريحة للعين */
+        text-align: center;
+        padding: 0 20px;
+        line-height: 1.4;
       }
 
       .section-title em {
         color: var(--gold);
         font-style: normal;
-        font-weight: bold; /* يحافظ على سماكة الخط الأصلية */
-        word-wrap: break-word; /* يسمح للنص الطويل ينزل سطر ثاني بدون لا يخرب التصميم */
+        font-weight: bold;
+        word-wrap: break-word;
       }
 
       .menu-grid {
         display: flex;
         flex-wrap: wrap;
         justify-content: center;
-        align-items: flex-start; /* 👈 هذا السطر هو اللي يمنع البطاقة من التمدد مع جارتها */
+        align-items: flex-start;
         gap: 15px;
         max-width: 1200px;
         margin: 0 auto;
@@ -258,7 +244,6 @@
         transition: transform 0.3s ease;
       }
 
-      /* ستايلات شارة غير متوفر وتأثير التغبيش للزبائن */
       .meal-card.unavailable .image-wrapper img,
       .meal-card.unavailable > .meal-title,
       .meal-card.unavailable > .meal-price {
@@ -272,7 +257,6 @@
         z-index: 11;
       }
 
-      /* الصندوق الجديد اللي يجمع الصورة والشريط */
       .image-wrapper {
         position: relative;
         width: 100%;
@@ -286,8 +270,8 @@
         bottom: 0;
         background: transparent;
         display: flex;
-        align-items: center; /* يتوسط بالطول برمجياً */
-        justify-content: center; /* يتوسط بالعرض برمجياً */
+        align-items: center;
+        justify-content: center;
         z-index: 10;
         pointer-events: none;
         text-align: center;
@@ -312,6 +296,7 @@
 
       .meal-card img {
         width: 100%;
+        height: auto;
         aspect-ratio: 4 / 3;
         object-fit: cover;
         border: 2px solid var(--gold);
@@ -359,7 +344,6 @@
         line-height: 1.4;
       }
 
-      /* زر الوجبة العشوائية للزبون */
       .random-btn-container {
         text-align: center;
         margin: 60px 0;
@@ -389,7 +373,6 @@
         border-left: solid 5px black;
       }
 
-      /* نافذة النتيجة العشوائية */
       .modal-overlay {
         position: fixed;
         top: 0;
@@ -473,14 +456,14 @@
 
     <script type="module">
       import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-      // في صفحة الزبون، ما نحتاج Auth، نحتاج بس Firestore عشان نقرأ البيانات
+      // التحديث لنسخة Lite لتخفيف حجم الجافاسكريبت بنسبة ضخمة لرضا أداة Lighthouse
       import {
         getFirestore,
         doc,
         getDoc,
         collection,
         getDocs,
-      } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+      } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-lite.js";
 
       const firebaseConfig = {
         apiKey: "AIzaSyAmMB6t0ePeB4Sx4sjjK_djhMj-WKbLnwM",
@@ -494,10 +477,8 @@
       const app = initializeApp(firebaseConfig);
       const db = getFirestore(app);
 
-      // 🌟 التوصيلة الأساسية: هني نحدد منيو أي مطعم نبي نعرض
       const RESTAURANT_OWNER_EMAIL = "yousef2008alqattan@gmail.com";
 
-      // مصفوفة الوجبات العشوائية
       window.customerRandomPool = [];
 
       async function loadCustomerMenu() {
@@ -509,13 +490,11 @@
           let dishes = [];
 
           if (restDocSnap.exists() && restDocSnap.data().categories) {
-            // الهيكلة الجديدة
             const data = restDocSnap.data();
             cats = data.categories || [];
             dishes = data.menuItems || [];
             if (data.randomMealPool) window.customerRandomPool = data.randomMealPool;
           } else {
-            // الرجوع للخلف إذا ما تم النشر بالنسخة الجديدة
             const catRef = collection(db, "restaurants", RESTAURANT_OWNER_EMAIL, "categories");
             const dishRef = collection(db, "restaurants", RESTAURANT_OWNER_EMAIL, "menuItems");
             const [catSnap, dishSnap] = await Promise.all([getDocs(catRef), getDocs(dishRef)]);
@@ -552,10 +531,11 @@
               cat.border === "gold" ? "cat-border-gold" : "cat-border-none";
             const imgClasses = `${shapeClass} ${borderClass}`;
 
+            // إضافة الأبعاد المباشرة 60x60 لرضا أداة Lighthouse
             const newNavBtn = document.createElement("a");
             newNavBtn.className = "a-nav";
             newNavBtn.href = "#" + sectionId;
-            newNavBtn.innerHTML = `<h2><span style="font-size: 21px; margin-bottom: 5px; display:block;">${cat.name}</span><img src="${cat.imageUrl}" class="${imgClasses}" alt="${cat.name}"></h2>`;
+            newNavBtn.innerHTML = `<h2><span style="font-size: 21px; margin-bottom: 5px; display:block;">${cat.name}</span><img src="${cat.imageUrl}" class="${imgClasses}" alt="${cat.name}" width="60" height="60" loading="lazy"></h2>`;
             mainNav.appendChild(newNavBtn);
 
             const sectionWrapper = document.createElement("div");
@@ -584,12 +564,13 @@
                   ? `<details><summary>التفاصيل</summary><div class="meal-details">${dish.details}</div></details>`
                   : `<details style="visibility: hidden; pointer-events: none;"><summary>التفاصيل</summary></details>`;
 
+              // إضافة أبعاد صريحة 400x300 مع الحفاظ على aspect-ratio 4:3
               const dishCard = document.createElement("div");
               dishCard.className = `meal-card ${availClass}`;
               dishCard.innerHTML = `
                 <div class="image-wrapper">
                     ${overlayHTML}
-                    <img src="${dish.imageUrl}" alt="${dish.name}" loading="lazy">
+                    <img src="${dish.imageUrl}" alt="${dish.name}" width="400" height="300" loading="lazy">
                 </div>
                 <h3 class="meal-title">${dish.name}</h3>
                 ${detailsHTML}
@@ -599,7 +580,6 @@
             }
           });
 
-          // إخفاء التحميل وعرض المنيو
           document.getElementById("loader-screen").style.display = "none";
           document.getElementById("menu-content").style.display = "block";
         } catch (error) {
@@ -608,39 +588,32 @@
         }
       }
 
-      // تشغيل الدالة أول ما تفتح الصفحة
       document.addEventListener("DOMContentLoaded", loadCustomerMenu);
     </script>
   </head>
   <body>
-    <!-- شاشة التحميل -->
     <div id="loader-screen">
       <div class="spinner"></div>
     </div>
 
-    <!-- محتوى المنيو للزبائن -->
     <div id="menu-content">
-      <!-- الشريط العلوي (الأقسام) -->
       <div class="nav-wrapper" id="navWrapper">
         <nav id="mainNav"></nav>
       </div>
 
-      <!-- الشعار -->
+      <!-- اللوجو مع أبعاد صريحة لإرضاء Lighthouse -->
       <div class="header-logo">
-        <img src="images/mmh-logo.webp" alt="Logo" />
+        <img src="images/mmhw-logo.webp" alt="Logo" width="200" height="200" />
       </div>
 
-      <!-- حاوية الأقسام والأطباق -->
       <div id="appContainer"></div>
 
-      <!-- زر الوجبة العشوائية -->
       <div class="random-btn-container">
         <button id="customerRandomBtn" onclick="pickRandomMeal()">
           وجبة عشوائية
         </button>
       </div>
 
-      <!-- نافذة نتيجة الوجبة العشوائية -->
       <div class="modal-overlay" id="resultModal">
         <div class="modal-content">
           <h3>الوجبة المقترحة لك هي:</h3>
@@ -657,9 +630,7 @@
       </div>
     </div>
 
-    <!-- أكواد مساعدة للزبائن -->
     <script>
-      // دالة السحب العشوائي
       function pickRandomMeal() {
         if (window.customerRandomPool && window.customerRandomPool.length > 0) {
           const randomIndex = Math.floor(
@@ -674,7 +645,6 @@
         }
       }
 
-      // تأثير الظل للشريط العلوي عند التمرير
       const nav = document.getElementById("mainNav");
       const navWrapper = document.getElementById("navWrapper");
 
@@ -705,15 +675,12 @@
       nav.addEventListener("scroll", updateNavGlow);
       window.addEventListener("resize", updateNavGlow);
 
-      // نشغلها أول مرة بعد ما تترتب الأقسام
       setTimeout(updateNavGlow, 500);
 
-      // نظام تتبع الأقسام المقتبس
       function activateSection() {
         let currentId = "";
         const sections = document.querySelectorAll(".category-section");
 
-        // حساب مكان القسم بالشاشة
         sections.forEach((section) => {
           const sectionTop = section.offsetTop - 200;
           if (window.scrollY >= sectionTop) {
@@ -721,7 +688,6 @@
           }
         });
 
-        // تشغيل الخط تحت القسم المناسب وإطفائه عن الباقي
         const navLinks = document.querySelectorAll(".a-nav");
         navLinks.forEach((link) => {
           link.classList.remove("active");
@@ -730,7 +696,6 @@
           }
         });
 
-        // تحريك الشريط العلوي ليضع القسم النشط في المنتصف
         const activeLink = document.querySelector(".a-nav.active");
         if (activeLink) {
           activeLink.scrollIntoView({
@@ -741,7 +706,6 @@
         }
       }
 
-      // تشغيل النظام مع كل تمرير للشاشة
       window.addEventListener("scroll", activateSection);
     </script>
   </body>
